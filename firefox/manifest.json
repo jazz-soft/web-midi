@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "WebMIDI-Api",
+  "name": "WebMIDI Api",
   "description": "WebMIDI Api",
   "version": "0.0.0.0",
   "content_scripts": [{"matches": ["<all_urls>"], "js": ["content.js"], "all_frames": true, "run_at": "document_start"}],
