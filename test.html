@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>web-midi test</title>
+<style type="text/css">
+#midiin { height: 11em;}
+</style>
+</head>
+
+<body>
+<h1>web-midi test</h1>
+<pre id=output>WebMIDI is not working</pre>
+<pre id=midiin></pre>
+
+</body>
+<script><!--
+var output = document.getElementById('output');
+var midiin = document.getElementById('midiin');
+
+function fail(err) {
+  var s = 'Cannot start WebMIDI';
+  if (err) s += ': ' + err;
+  output.innerHTML = s; 
+}
+function success(webmidi) {
+  output.innerHTML = 'WebMIDI is working!'; 
+}
+
+try {
+  navigator.requestMIDIAccess().then(success, fail);
+}
+catch (err) {
+  output.innerHTML = 'Cannot start WebMIDI: ' + err; 
+}
+--></script>
+</html>
