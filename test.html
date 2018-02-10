@@ -23,7 +23,29 @@ function fail(err) {
   output.innerHTML = s; 
 }
 function success(webmidi) {
-  output.innerHTML = 'WebMIDI is working!'; 
+  output.innerHTML = 'WebMIDI is working!\n';
+  if (webmidi.outputs.size) {
+    output.innerHTML += '\nMIDI-Out ports available: ' + webmidi.outputs.size + '\n';
+    webmidi.outputs.forEach(function(port) {
+      output.innerHTML += '    ' + port.name +
+        '; manufacturer: ' + port.manufacturer +
+        '; version: ' + port.version + '\n';
+    });
+  }
+  else {
+    output.innerHTML += '\nNo MIDI-Out ports available.\n';
+  }
+  if (webmidi.inputs.size) {
+    output.innerHTML += '\nMIDI-In ports available: ' + webmidi.inputs.size + '\n';
+    webmidi.inputs.forEach(function(port) {
+      output.innerHTML += '    ' + port.name +
+        '; manufacturer: ' + port.manufacturer +
+        '; version: ' + port.version + '\n';
+    });
+  }
+  else {
+    output.innerHTML += '\nNo MIDI-In ports available.\n';
+  }
 }
 
 try {
