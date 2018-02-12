@@ -16,7 +16,17 @@
 <script><!--
 var output = document.getElementById('output');
 var midiin = document.getElementById('midiin');
+var midilog = [];
 
+function printMidi(name) {
+  return function(msg) {
+    var s = name + ':';
+    for (var i = 0; i < msg.data.length; i++) s += (msg.data[i] <16 ? ' 0' : ' ') + msg.data[i].toString(16);
+    midilog.push(s);
+    if (midilog.length > 16) midilog.splice(0, 1);
+    midiin.innerHTML = midilog.join('\n');
+  }
+}
 function fail(err) {
   var s = 'Cannot start WebMIDI';
   if (err) s += ': ' + err;
@@ -26,10 +36,16 @@ function success(webmidi) {
   output.innerHTML = 'WebMIDI is working!\n';
   if (webmidi.outputs.size) {
     output.innerHTML += '\nMIDI-Out ports available: ' + webmidi.outputs.size + '\n';
+    var time = window.performance.now();
     webmidi.outputs.forEach(function(port) {
       output.innerHTML += '    ' + port.name +
         '; manufacturer: ' + port.manufacturer +
-        '; version: ' + port.version + '\n';
+        '; version: ' + port.version +
+        '; state: ' + port.state + '\n';
+      port.send([0x90, 0x40, 0x7f], time);
+      time += 200;
+      port.send([0x80, 0x40, 0x00], time);
+      time += 200;
     });
   }
   else {
@@ -38,9 +54,11 @@ function success(webmidi) {
   if (webmidi.inputs.size) {
     output.innerHTML += '\nMIDI-In ports available: ' + webmidi.inputs.size + '\n';
     webmidi.inputs.forEach(function(port) {
+      port.onmidimessage = printMidi(port.name);
       output.innerHTML += '    ' + port.name +
         '; manufacturer: ' + port.manufacturer +
-        '; version: ' + port.version + '\n';
+        '; version: ' + port.version +
+        '; state: ' + port.state + '\n';
     });
   }
   else {
