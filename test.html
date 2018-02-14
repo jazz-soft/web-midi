@@ -32,6 +32,10 @@ function fail(err) {
   if (err) s += ': ' + err;
   output.innerHTML = s; 
 }
+function onChange(x) {
+  console.log('midi state changed', x);
+}
+
 function success(webmidi) {
   output.innerHTML = 'WebMIDI is working!\n';
   if (webmidi.outputs.size) {
@@ -64,6 +68,7 @@ function success(webmidi) {
   else {
     output.innerHTML += '\nNo MIDI-In ports available.\n';
   }
+  webmidi.onstatechange = onChange;
 }
 
 try {

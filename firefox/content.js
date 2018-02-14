@@ -150,7 +150,7 @@ function web_midi() {
       else if (a[0] === 'midi') {
         impl = pool[a[1]].input;
         if (impl) {
-          impl.port.onmidimessage({ timeStamp: Date.now(), data: Uint8Array.from(a.slice(3)) });
+          impl.port.onmidimessage(new MIDIMessageEvent(impl.port, Uint8Array.from(a.slice(3))));
         }
       }
     }
@@ -160,6 +160,39 @@ function web_midi() {
     this.sysexEnabled = true;
   }
   MIDIAccess.prototype.onstatechange = function() {};
+
+  function MIDIConnectionEvent(port) {
+    this.bubbles = false;
+    this.cancelBubble = false;
+    this.cancelable = false;
+    this.currentTarget = midi_access;
+    this.defaultPrevented = false;
+    this.eventPhase = 0;
+    this.path = [];
+    this.port = port;
+    this.returnValue = true;
+    this.srcElement = midi_access;
+    this.target = midi_access;
+    this.timeStamp = Date.now();
+    this.type = 'statechange';
+  }
+
+  function MIDIMessageEvent(port, data) {
+    this.bubbles = false;
+    this.cancelBubble = false;
+    this.cancelable = false;
+    this.currentTarget = port;
+    this.data = data;
+    this.defaultPrevented = false;
+    this.eventPhase = 0;
+    this.path = [];
+    this.receivedTime = Date.now();
+    this.returnValue = true;
+    this.srcElement = port;
+    this.target = port;
+    this.timeStamp = this.receivedTime;
+    this.type = 'midimessage';
+  }
 
   function MIDIOutput(a) {
     this.type = 'output';
