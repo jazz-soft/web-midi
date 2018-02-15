@@ -17,6 +17,7 @@
 var output = document.getElementById('output');
 var midiin = document.getElementById('midiin');
 var midilog = [];
+var webmidi;
 
 function printMidi(name) {
   return function(msg) {
@@ -27,16 +28,8 @@ function printMidi(name) {
     midiin.innerHTML = midilog.join('\n');
   }
 }
-function fail(err) {
-  var s = 'Cannot start WebMIDI';
-  if (err) s += ': ' + err;
-  output.innerHTML = s; 
-}
-function onChange(x) {
-  console.log('midi state changed', x);
-}
 
-function success(webmidi) {
+function refresh() {
   output.innerHTML = 'WebMIDI is working!\n';
   if (webmidi.outputs.size) {
     output.innerHTML += '\nMIDI-Out ports available: ' + webmidi.outputs.size + '\n';
@@ -68,7 +61,18 @@ function success(webmidi) {
   else {
     output.innerHTML += '\nNo MIDI-In ports available.\n';
   }
-  webmidi.onstatechange = onChange;
+}
+
+function fail(err) {
+  var s = 'Cannot start WebMIDI';
+  if (err) s += ': ' + err;
+  output.innerHTML = s; 
+}
+
+function success(midiaccess) {
+  webmidi = midiaccess;
+  webmidi.onstatechange = refresh;
+  refresh();
 }
 
 try {

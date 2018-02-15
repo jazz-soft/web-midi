@@ -10,6 +10,7 @@ function web_midi() {
   var inputMap = {};
   var outputUUID = {};
   var inputUUID = {};
+  var _onstatechange;
   function newPlugin() {
     var plugin = { id: pool.length };
     if (!plugin.id) plugin.ready = true;
@@ -87,6 +88,9 @@ function web_midi() {
       try { a = JSON.parse(v[i]);} catch (err) {}
       if (!a.length) continue;
       if (a[0] === 'refresh') {
+        if (!midi_access) {
+          midi_access = new MIDIAccess();
+        }
         var outputs = new Map();
         var inputs = new Map();
         if (a[1].ins) {
@@ -101,15 +105,43 @@ function web_midi() {
             outputs.set(port.id, port);
           }
         }
-        if (!midi_access) {
-          midi_access = new MIDIAccess();
-        }
-        midi_access.inputs = inputs;
-        midi_access.outputs = outputs;
+        var changed = false;
         var promises = [];
-        inputs.forEach(function(port) { promises.push(tryPort(port)); });
-        outputs.forEach(function(port) { promises.push(tryPort(port)); });
-        Promise.all(promises).then(function() { resume(midi_access); });
+        inputs.forEach(function(port) {
+          if (!midi_access.inputs.has(port.id)) {
+            promises.push(tryPort(port));
+            changed = true;
+          }
+        });
+        outputs.forEach(function(port) {
+          if (!midi_access.outputs.has(port.id)) {
+            promises.push(tryPort(port));
+            changed = true;
+          }
+        });
+        midi_access.inputs.forEach(function(port) {
+          if (!inputs.has(port.id)) changed = true;
+        });
+        midi_access.outputs.forEach(function(port) {
+          if (!outputs.has(port.id)) changed = true;
+        });
+        if (changed) {
+          midi_access.inputs = inputs;
+          midi_access.outputs = outputs;
+          Promise.all(promises).then(function() {
+            if (_onstatechange) _onstatechange();
+            if (resume) {
+              resume(midi_access);
+              resume = undefined;
+            }
+          });
+        }
+        else { // first time and empty
+          if (resume) {
+            resume(midi_access);
+            resume = undefined;
+          }
+        }
       }
       else if (a[0] === 'openout') {
         impl = pool[a[1]].output;
@@ -158,6 +190,25 @@ function web_midi() {
 
   function MIDIAccess() {
     this.sysexEnabled = true;
+    this.outputs = new Map();
+    this.inputs = new Map();
+    Object.defineProperty(this, 'onstatechange', {
+      get() { return _onstatechange; },
+      set(value) {
+        if (value instanceof Function) {
+          if (!_onstatechange) {
+            setInterval(refresh, 250);
+          }
+          _onstatechange = value;
+        }
+        else {
+          if (_onstatechange) {
+            clearInterval(refresh);
+            _onstatechange = undefined;
+          }
+        }
+      }
+    });
   }
   MIDIAccess.prototype.onstatechange = function() {};
 
@@ -229,10 +280,10 @@ function web_midi() {
       if (data[i] == Math.floor(data[i]) && data[i] >=0 && data[i] <= 255) v.push(data[i]);
       else return;
     }
-    if (timestamp > window.performance.now()) {
+    if (timestamp > performance.now()) {
       setTimeout(function() {
         document.dispatchEvent(new CustomEvent('jazz-midi', { detail: v }));
-      }, timestamp - window.performance.now()); 
+      }, timestamp - performance.now()); 
     }
     else document.dispatchEvent(new CustomEvent('jazz-midi', { detail: v }));
   };
@@ -286,7 +337,7 @@ function web_midi() {
     }
     document.addEventListener('jazz-midi-msg', initListener);
     document.dispatchEvent(new Event('jazz-midi'));
-    window.setTimeout(function() { if (!installed) reject('Jazz-MIDI extension not found!'); }, 10);
+    setTimeout(function() { if (!installed) reject('Jazz-MIDI extension not found!'); }, 10);
   });
 }
 
