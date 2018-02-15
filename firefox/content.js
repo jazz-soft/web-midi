@@ -105,36 +105,48 @@ function web_midi() {
             outputs.set(port.id, port);
           }
         }
-        var changed = false;
+        var changed = [];
         var promises = [];
         inputs.forEach(function(port) {
           if (!midi_access.inputs.has(port.id)) {
+            changed.push(port);
             promises.push(tryPort(port));
-            changed = true;
           }
         });
         outputs.forEach(function(port) {
           if (!midi_access.outputs.has(port.id)) {
+            changed.push(port);
             promises.push(tryPort(port));
-            changed = true;
           }
         });
         midi_access.inputs.forEach(function(port) {
-          if (!inputs.has(port.id)) changed = true;
+          if (!inputs.has(port.id)) {
+            changed.push(port);
+            port.close();
+          }
         });
         midi_access.outputs.forEach(function(port) {
-          if (!outputs.has(port.id)) changed = true;
+          if (!outputs.has(port.id)) {
+            changed.push(port);
+            port.close();
+          }
         });
-        if (changed) {
+        if (changed.length) {
           midi_access.inputs = inputs;
           midi_access.outputs = outputs;
-          Promise.all(promises).then(function() {
-            if (_onstatechange) _onstatechange();
-            if (resume) {
-              resume(midi_access);
-              resume = undefined;
-            }
-          });
+          Promise.all(promises).then(function(x) {
+            return function() {
+              if (_onstatechange) {
+                for (var i = 0; i < x.length; i++) {
+                  _onstatechange(new MIDIConnectionEvent(x[i]));
+                }
+              }
+              if (resume) {
+                resume(midi_access);
+                resume = undefined;
+              }
+            };
+          }(changed));
         }
         else { // first time and empty
           if (resume) {
