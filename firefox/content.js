@@ -138,7 +138,7 @@ function web_midi() {
             return function() {
               if (_onstatechange) {
                 for (var i = 0; i < x.length; i++) {
-                  _onstatechange(new MIDIConnectionEvent(x[i]));
+                  _onstatechange(new MIDIConnectionEvent(x[i], midi_access));
                 }
               }
               if (resume) {
@@ -160,15 +160,21 @@ function web_midi() {
         impl.promise = undefined;
         if (impl) {
           if (a[2] == impl.name) {
-            impl.open = true;
-            impl.port.state = 'connected';
-            impl.port.connection = 'open';
+            if (!impl.open) {
+              impl.open = true;
+              impl.port.state = 'connected';
+              impl.port.connection = 'open';
+              if (impl.onstatechange) impl.onstatechange(new MIDIConnectionEvent(impl.port, impl.port));
+            }
             if (impl.resolve) impl.resolve(impl.port);
           }
           else {
-            impl.open = false;
-            impl.port.state = 'disconnected';
-            impl.port.connection = 'closed';
+            if (impl.open) {
+              impl.open = false;
+              impl.port.state = 'disconnected';
+              impl.port.connection = 'closed';
+              if (impl.onstatechange) impl.onstatechange(new MIDIConnectionEvent(impl.port, impl.port));
+            }
             if (impl.reject) impl.reject();
           }
         }
@@ -178,15 +184,21 @@ function web_midi() {
         impl.promise = undefined;
         if (impl) {
           if (a[2] == impl.name) {
-            impl.open = true;
-            impl.port.state = 'connected';
-            impl.port.connection = 'open';
+            if (!impl.open) {
+              impl.open = true;
+              impl.port.state = 'connected';
+              impl.port.connection = 'open';
+              if (impl.onstatechange) impl.onstatechange(new MIDIConnectionEvent(impl.port, impl.port));
+            }
             if (impl.resolve) impl.resolve(impl.port);
           }
           else {
-            impl.open = false;
-            impl.port.state = 'disconnected';
-            impl.port.connection = 'closed';
+            if (impl.open) {
+              impl.open = false;
+              impl.port.state = 'disconnected';
+              impl.port.connection = 'closed';
+              if (impl.onstatechange) impl.onstatechange(new MIDIConnectionEvent(impl.port, impl.port));
+            }
             if (impl.reject) impl.reject();
           }
         }
@@ -224,18 +236,18 @@ function web_midi() {
   }
   MIDIAccess.prototype.onstatechange = function() {};
 
-  function MIDIConnectionEvent(port) {
+  function MIDIConnectionEvent(port, target) {
     this.bubbles = false;
     this.cancelBubble = false;
     this.cancelable = false;
-    this.currentTarget = midi_access;
+    this.currentTarget = target;
     this.defaultPrevented = false;
     this.eventPhase = 0;
     this.path = [];
     this.port = port;
     this.returnValue = true;
-    this.srcElement = midi_access;
-    this.target = midi_access;
+    this.srcElement = target;
+    this.target = target;
     this.timeStamp = Date.now();
     this.type = 'statechange';
   }
@@ -258,6 +270,7 @@ function web_midi() {
   }
 
   function MIDIOutput(a) {
+    var self = this;
     this.type = 'output';
     this.name = a.name;
     this.manufacturer = a.manufacturer;
@@ -265,8 +278,19 @@ function web_midi() {
     this.id = getUUID(this.name, false);
     this.state = 'disconnected';
     this.connection = 'closed';
+    Object.defineProperty(this, 'onstatechange', {
+      get() { return outputMap[self.name].onstatechange; },
+      set(value) {
+        if (value instanceof Function) {
+          outputMap[self.name].onstatechange = value;
+          outputMap[self.name].onstatechange(new MIDIConnectionEvent(self, self));
+        }
+        else {
+          outputMap[self.name].onstatechange = value;
+        }
+      }
+    });
   }
-  MIDIOutput.prototype.onstatechange = function() {};
   MIDIOutput.prototype.open = function() {
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -278,10 +302,13 @@ function web_midi() {
   };
   MIDIOutput.prototype.close = function() {
     var impl = outputMap[this.name];
-    impl.open = false;
-    this.state = 'disconnected';
-    this.connection = 'closed';
-    document.dispatchEvent(new CustomEvent('jazz-midi', { detail: ['closeout', impl.plugin.id, impl.name] }));
+    if (impl.open) {
+      impl.open = false;
+      this.state = 'disconnected';
+      this.connection = 'closed';
+      document.dispatchEvent(new CustomEvent('jazz-midi', { detail: ['closeout', impl.plugin.id, impl.name] }));
+      if (impl.onstatechange) impl.onstatechange(new MIDIConnectionEvent(this, this));
+    }
     return this;
   };
   MIDIOutput.prototype.clear = function() {};
@@ -301,6 +328,7 @@ function web_midi() {
   };
 
   function MIDIInput(a) {
+    var self = this;
     this.type = 'input';
     this.name = a.name;
     this.manufacturer = a.manufacturer;
@@ -308,8 +336,19 @@ function web_midi() {
     this.id = getUUID(this.name, true);
     this.state = 'disconnected';
     this.connection = 'closed';
+    Object.defineProperty(this, 'onstatechange', {
+      get() { return inputMap[self.name].onstatechange; },
+      set(value) {
+        if (value instanceof Function) {
+          inputMap[self.name].onstatechange = value;
+          inputMap[self.name].onstatechange(new MIDIConnectionEvent(self, self));
+        }
+        else {
+          inputMap[self.name].onstatechange = value;
+        }
+      }
+    });
   }
-  MIDIInput.prototype.onstatechange = function() {};
   MIDIInput.prototype.onmidimessage = function() {};
   MIDIInput.prototype.open = function() {
     var self = this;
@@ -322,10 +361,14 @@ function web_midi() {
   };
   MIDIInput.prototype.close = function() {
     var impl = inputMap[this.name];
-    impl.open = false;
-    this.state = 'disconnected';
-    this.connection = 'closed';
-    document.dispatchEvent(new CustomEvent('jazz-midi', { detail: ['closein', impl.plugin.id, impl.name] }));
+    if (impl.open) {
+      impl.open = false;
+      this.state = 'disconnected';
+      this.connection = 'closed';
+      document.dispatchEvent(new CustomEvent('jazz-midi', { detail: ['closein', impl.plugin.id, impl.name] }));
+      if (impl.onstatechange) impl.onstatechange(new MIDIConnectionEvent(this, this));
+    }
+    this.onmidimessage = MIDIInput.prototype.onmidimessage;
     return this;
   };
 
