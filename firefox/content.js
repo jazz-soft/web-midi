@@ -213,6 +213,7 @@ function web_midi() {
   }
 
   function MIDIAccess() {
+    var watcher;
     this.sysexEnabled = true;
     this.outputs = new Map();
     this.inputs = new Map();
@@ -221,13 +222,13 @@ function web_midi() {
       set(value) {
         if (value instanceof Function) {
           if (!_onstatechange) {
-            setInterval(refresh, 250);
+            watcher = setInterval(refresh, 250);
           }
           _onstatechange = value;
         }
         else {
           if (_onstatechange) {
-            clearInterval(refresh);
+            clearInterval(watcher);
             _onstatechange = undefined;
           }
         }
