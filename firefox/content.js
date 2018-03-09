@@ -375,25 +375,27 @@ function web_midi() {
 
   return new Promise(function(resolve, reject) {
     if (midi_access) resolve(midi_access);
-    function initListener(e) {
-      installed = true;
-      if (!msg) msg = document.getElementById('jazz-midi-msg');
-      if (!msg) return;
-      var a = [];
-      try { a = JSON.parse(msg.innerText);} catch (err) {}
-      msg.innerText = '';
-      document.removeEventListener('jazz-midi-msg', initListener);
-      if (a[0] === 'version') {
-        resume = resolve;
-        newPlugin();
-        refresh();
-        document.addEventListener('jazz-midi-msg', listener);
+    else {
+      function initListener(e) {
+        installed = true;
+        if (!msg) msg = document.getElementById('jazz-midi-msg');
+        if (!msg) return;
+        var a = [];
+        try { a = JSON.parse(msg.innerText);} catch (err) {}
+        msg.innerText = '';
+        document.removeEventListener('jazz-midi-msg', initListener);
+        if (a[0] === 'version') {
+          resume = resolve;
+          newPlugin();
+          refresh();
+          document.addEventListener('jazz-midi-msg', listener);
+        }
+        else reject('Jazz-MIDI extension is not properly installed!')
       }
-      else reject('Jazz-MIDI extension is not properly installed!')
+      document.addEventListener('jazz-midi-msg', initListener);
+      document.dispatchEvent(new Event('jazz-midi'));
+      setTimeout(function() { if (!installed) reject('Jazz-MIDI extension not found!'); }, 10);
     }
-    document.addEventListener('jazz-midi-msg', initListener);
-    document.dispatchEvent(new Event('jazz-midi'));
-    setTimeout(function() { if (!installed) reject('Jazz-MIDI extension not found!'); }, 10);
   });
 }
 
