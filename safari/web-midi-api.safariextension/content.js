@@ -76,12 +76,10 @@ console.log('Initializing Web MIDI API...');
     var outputs = new Map();
     var inputs = new Map();
     for (i = 0; (x = pool[0].MidiOutInfo(i)).length; i++) {
-      //outputs.push({ type: _engine._type, name: x[0], manufacturer: x[1], version: x[2] });
       p = getOutput(x[i]);
       outputs.set(p.id, p);
     }
     for (i = 0; (x = pool[0].MidiInInfo(i)).length; i++) {
-      //ins.push({ type: _engine._type, name: x[0], manufacturer: x[1], version: x[2] });
       p = getInput(x[i]);
       inputs.set(p.id, p);
     }
@@ -148,6 +146,7 @@ console.log('Initializing Web MIDI API...');
   MIDIOutput.prototype.close = function() {
     var impl = outputMap[this.name];
     if (impl.open) {
+      impl.plugin.MidiOutClose();
       impl.open = false;
       this.state = 'disconnected';
       this.connection = 'closed';
@@ -170,7 +169,55 @@ console.log('Initializing Web MIDI API...');
   };
 
   function MIDIInput(x) {
+    var self = this;
+    this.type = 'input';
+    this.name = x[0];
+    this.manufacturer = x[1];
+    this.version = x[2];
+    this.id = getUUID(this.name, true);
+    this.state = 'disconnected';
+    this.connection = 'closed';
+    Object.defineProperty(this, 'onstatechange', {
+      get() { return inputMap[self.name].onstatechange; },
+      set(value) {
+        if (value instanceof Function) {
+          inputMap[self.name].onstatechange = value;
+          inputMap[self.name].onstatechange(new MIDIConnectionEvent(self, self));
+        }
+        else {
+          inputMap[self.name].onstatechange = value;
+        }
+      }
+    });
   }
+  MIDIInput.prototype.onmidimessage = function() {};
+  MIDIInput.prototype.open = function() {
+    var impl = inputMap[this.name];
+    if (!impl.open) {
+      var s = impl.plugin.MidiInOpen(this.name, function(x){ console.log('midi received:', x); });
+      if (s == this.name) {
+        impl.open = true;
+        this.state = 'connected';
+        this.connection = 'open';
+        //if (impl.onstatechange) impl.onstatechange(new MIDIConnectionEvent(this, this));
+      }
+      else if (s) impl.plugin.MidiInClose();
+    }
+    if (impl.open) return this;
+    else return new Promise(function(resolve, reject) { reject(); });
+  };
+  MIDIInput.prototype.close = function() {
+    var impl = inputMap[this.name];
+    if (impl.open) {
+      impl.plugin.MidiOutClose();
+      impl.open = false;
+      this.state = 'disconnected';
+      this.connection = 'closed';
+      //if (impl.onstatechange) impl.onstatechange(new MIDIConnectionEvent(this, this));
+    }
+    this.onmidimessage = MIDIInput.prototype.onmidimessage;
+    return this;
+  };
 
   function notInstalled() {
     var div = document.createElement('div');
