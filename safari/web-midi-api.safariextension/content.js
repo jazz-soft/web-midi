@@ -27,7 +27,7 @@ console.log('Initializing Web MIDI API...');
     }
   }
 
-  function _newPlugin() {
+  function newPlugin() {
     var plg = document.createElement('object');
     plg.style.visibility = 'hidden';
     plg.style.width = '0px';
@@ -37,7 +37,59 @@ console.log('Initializing Web MIDI API...');
     return plg.isJazz ? plg : undefined;
   };
 
-  function MIDIAccess(obj) {
+  function getOutput(x) {
+    var impl = outputMap[x[0]];
+    if (!impl) {
+      if (pool.length <= outputArr.length) newPlugin();
+      var plugin = pool[outputArr.length];
+      impl = {
+        name: x[0],
+        port: new MIDIOutput(x),
+        plugin: plugin
+      };
+      plugin.output = impl;
+      outputArr.push(impl);
+      outputMap[x[0]] = impl;
+    }
+    return impl.port;
+  }
+
+  function getInput(x) {
+    var impl = inputMap[x[0]];
+    if (!impl) {
+      if (pool.length <= inputArr.length) newPlugin();
+      var plugin = pool[inputArr.length];
+      impl = {
+        name: x[0],
+        port: new MIDIInput(x),
+        plugin: plugin
+      };
+      plugin.input = impl;
+      inputArr.push(impl);
+      inputMap[x[0]] = impl;
+    }
+    return impl.port;
+  }
+
+  function refresh() {
+    var i, x, p;
+    var outputs = new Map();
+    var inputs = new Map();
+    for (i = 0; (x = pool[0].MidiOutInfo(i)).length; i++) {
+      //outputs.push({ type: _engine._type, name: x[0], manufacturer: x[1], version: x[2] });
+      p = getOutput(x[i]);
+      outputs.set(p.id, p);
+    }
+    for (i = 0; (x = pool[0].MidiInInfo(i)).length; i++) {
+      //ins.push({ type: _engine._type, name: x[0], manufacturer: x[1], version: x[2] });
+      p = getInput(x[i]);
+      inputs.set(p.id, p);
+    }
+    midi_access.inputs = inputs;
+    midi_access.outputs = outputs;
+  }
+
+  function MIDIAccess(plg) {
     var watcher;
     this.sysexEnabled = true;
     this.outputs = new Map();
@@ -55,6 +107,70 @@ console.log('Initializing Web MIDI API...');
     });
   }
   MIDIAccess.prototype.onstatechange = function() {};
+
+  function MIDIOutput(x) {
+    var self = this;
+    this.type = 'output';
+    this.name = x[0];
+    this.manufacturer = x[1];
+    this.version = x[2];
+    this.id = getUUID(this.name, false);
+    this.state = 'disconnected';
+    this.connection = 'closed';
+    Object.defineProperty(this, 'onstatechange', {
+      get() { return outputMap[self.name].onstatechange; },
+      set(value) {
+        if (value instanceof Function) {
+          outputMap[self.name].onstatechange = value;
+          outputMap[self.name].onstatechange(new MIDIConnectionEvent(self, self));
+        }
+        else {
+          outputMap[self.name].onstatechange = value;
+        }
+      }
+    });
+  }
+  MIDIOutput.prototype.open = function() {
+    var impl = outputMap[this.name];
+    if (!impl.open) {
+      var s = impl.plugin.MidiOutOpen(this.name);
+      if (s == this.name) {
+        impl.open = true;
+        this.state = 'connected';
+        this.connection = 'open';
+        //if (impl.onstatechange) impl.onstatechange(new MIDIConnectionEvent(this, this));
+      }
+      else if (s) impl.plugin.MidiOutClose();
+    }
+    if (impl.open) return this;
+    else return new Promise(function(resolve, reject) { reject(); });
+  };
+  MIDIOutput.prototype.close = function() {
+    var impl = outputMap[this.name];
+    if (impl.open) {
+      impl.open = false;
+      this.state = 'disconnected';
+      this.connection = 'closed';
+      //if (impl.onstatechange) impl.onstatechange(new MIDIConnectionEvent(this, this));
+    }
+    return this;
+  };
+  MIDIOutput.prototype.clear = function() {};
+  MIDIOutput.prototype.send = function(data, timestamp) {
+    var plugin = outputMap[this.name].plugin;
+    var v = [];
+    for (var i = 0; i < data.length; i++) {
+      if (data[i] == Math.floor(data[i]) && data[i] >=0 && data[i] <= 255) v.push(data[i]);
+      else return;
+    }
+    if (timestamp > performance.now()) {
+      setTimeout(function() { plugin.MidiOutRaw(v); }, timestamp - performance.now()); 
+    }
+    else plugin.MidiOutRaw(v);
+  };
+
+  function MIDIInput(x) {
+  }
 
   function notInstalled() {
     var div = document.createElement('div');
@@ -79,9 +195,11 @@ console.log('Initializing Web MIDI API...');
       var div = document.createElement('div');
       div.style.visibility='hidden';
       document.body.appendChild(div);
-      var plg = _newPlugin();
+      var plg = newPlugin();
       if (plg) {
+        pool.push(plg);
         midi_access = new MIDIAccess(plg);
+        refresh();
         resolve(midi_access);
       }
       else {
