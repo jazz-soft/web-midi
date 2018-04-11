@@ -1,5 +1,4 @@
 function web_midi() {
-console.log('Initializing Web MIDI API...');
   var midi_access;
   var pool = [];
   var outputArr = [];
@@ -8,6 +7,7 @@ console.log('Initializing Web MIDI API...');
   var inputMap = {};
   var outputUUID = {};
   var inputUUID = {};
+  var _onstatechange;
 
   function generateUUID() {
     var a = new Array(64);
@@ -40,7 +40,7 @@ console.log('Initializing Web MIDI API...');
   function getOutput(x) {
     var impl = outputMap[x[0]];
     if (!impl) {
-      if (pool.length <= outputArr.length) newPlugin();
+      if (pool.length <= outputArr.length) pool.push(newPlugin());
       var plugin = pool[outputArr.length];
       impl = {
         name: x[0],
@@ -57,7 +57,7 @@ console.log('Initializing Web MIDI API...');
   function getInput(x) {
     var impl = inputMap[x[0]];
     if (!impl) {
-      if (pool.length <= inputArr.length) newPlugin();
+      if (pool.length <= inputArr.length) pool.push(newPlugin());
       var plugin = pool[inputArr.length];
       impl = {
         name: x[0],
@@ -76,15 +76,47 @@ console.log('Initializing Web MIDI API...');
     var outputs = new Map();
     var inputs = new Map();
     for (i = 0; (x = pool[0].MidiOutInfo(i)).length; i++) {
-      p = getOutput(x[i]);
+      p = getOutput(x);
       outputs.set(p.id, p);
     }
     for (i = 0; (x = pool[0].MidiInInfo(i)).length; i++) {
-      p = getInput(x[i]);
+      p = getInput(x);
       inputs.set(p.id, p);
     }
-    midi_access.inputs = inputs;
-    midi_access.outputs = outputs;
+    var changed = [];
+    inputs.forEach(function(port) {
+      if (!midi_access.inputs.has(port.id)) {
+        changed.push(port);
+        port.open();
+      }
+    });
+    outputs.forEach(function(port) {
+      if (!midi_access.outputs.has(port.id)) {
+        changed.push(port);
+        port.open();
+      }
+    });
+    midi_access.inputs.forEach(function(port) {
+      if (!inputs.has(port.id)) {
+        changed.push(port);
+        port.close();
+      }
+    });
+    midi_access.outputs.forEach(function(port) {
+      if (!outputs.has(port.id)) {
+        changed.push(port);
+        port.close();
+      }
+    });
+    if (changed.length) {
+      midi_access.inputs = inputs;
+      midi_access.outputs = outputs;
+      if (_onstatechange) {
+        for (i = 0; i < x.length; i++) {
+          _onstatechange(new MIDIConnectionEvent(changed[i], midi_access));
+        }
+      }
+    }
   }
 
   function MIDIAccess(plg) {
@@ -105,6 +137,39 @@ console.log('Initializing Web MIDI API...');
     });
   }
   MIDIAccess.prototype.onstatechange = function() {};
+
+  function MIDIConnectionEvent(port, target) {
+    this.bubbles = false;
+    this.cancelBubble = false;
+    this.cancelable = false;
+    this.currentTarget = target;
+    this.defaultPrevented = false;
+    this.eventPhase = 0;
+    this.path = [];
+    this.port = port;
+    this.returnValue = true;
+    this.srcElement = target;
+    this.target = target;
+    this.timeStamp = Date.now();
+    this.type = 'statechange';
+  }
+
+  function MIDIMessageEvent(port, data) {
+    this.bubbles = false;
+    this.cancelBubble = false;
+    this.cancelable = false;
+    this.currentTarget = port;
+    this.data = data;
+    this.defaultPrevented = false;
+    this.eventPhase = 0;
+    this.path = [];
+    this.receivedTime = Date.now();
+    this.returnValue = true;
+    this.srcElement = port;
+    this.target = port;
+    this.timeStamp = this.receivedTime;
+    this.type = 'midimessage';
+  }
 
   function MIDIOutput(x) {
     var self = this;
@@ -194,7 +259,9 @@ console.log('Initializing Web MIDI API...');
   MIDIInput.prototype.open = function() {
     var impl = inputMap[this.name];
     if (!impl.open) {
-      var s = impl.plugin.MidiInOpen(this.name, function(x){ console.log('midi received:', x); });
+      var s = impl.plugin.MidiInOpen(this.name, function(t, x){
+        impl.port.onmidimessage(new MIDIMessageEvent(impl.port, Uint8Array.from(x)));
+      });
       if (s == this.name) {
         impl.open = true;
         this.state = 'connected';
