@@ -1,4 +1,4 @@
-if (!navigator.requestMIDIAccess) {
+if (document instanceof HTMLDocument && !navigator.requestMIDIAccess) {
   var script = document.createElement("script");
   script.textContent = "navigator.requestMIDIAccess=function(){if(typeof JZZ=='undefined')JZZ=(" +
     _JZZ.toString() +

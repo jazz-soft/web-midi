@@ -2,7 +2,11 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
-      all: ['src/*.js']
+      all: ['src/**/*.js']
+    },
+    import: {
+      src: 'node_modules/jzz/javascript/JZZ.js',
+      dest: 'src/_JZZ.js'
     },
     uglify: {
       firefox: {
@@ -21,5 +25,6 @@ module.exports = function(grunt) {
   });
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.registerTask('default', ['uglify']);
+  grunt.registerTask('import', require('./src/tools/import.js')(grunt));
+  grunt.registerTask('default', ['import', 'uglify']);
 };
