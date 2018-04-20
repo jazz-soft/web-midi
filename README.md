@@ -9,5 +9,12 @@ This add-on requires
 [**Jazz-MIDI**](https://addons.mozilla.org/en-US/firefox/addon/jazz-midi/) extension and
 [**Jazz-Plugin**](https://jazz-soft.net).
 
+## Safari
+
+While the extension is under approval by Apple,
+it is available [**here**](https://jazz-soft.net/download/web-midi/web-midi.safariextz).  
+This extension requires
+[**Jazz-Plugin**](https://jazz-soft.net).
+
 *Your comments and suggestions are [**welcome**](https://jazz-soft.org).  
 We would really appreciate your [**support**](https://jazz-soft.net/donate)!*
