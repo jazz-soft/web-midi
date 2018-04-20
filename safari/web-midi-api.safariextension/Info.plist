@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Jazz-Soft</string>
 	<key>Builder Version</key>
-	<string>13604.5.6</string>
+	<string>13605.1.33.1.2</string>
 	<key>CFBundleDisplayName</key>
 	<string>Web MIDI API</string>
 	<key>CFBundleIdentifier</key>
@@ -13,23 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.0.0.0</string>
+	<string>1.0.1.0</string>
 	<key>CFBundleVersion</key>
-	<string>0</string>
-	<key>Chrome</key>
-	<dict>
-		<key>Bars</key>
-		<array>
-			<dict>
-				<key>Filename</key>
-				<string>bar.html</string>
-				<key>Identifier</key>
-				<string></string>
-				<key>Label</key>
-				<string></string>
-			</dict>
-		</array>
-	</dict>
+	<string>1</string>
 	<key>Content</key>
 	<dict>
 		<key>Scripts</key>
@@ -44,7 +30,7 @@
 	<key>Description</key>
 	<string>Web MIDI API for Safari</string>
 	<key>DeveloperIdentifier</key>
-	<string>0000000000</string>
+	<string>76EXZ289MK</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
