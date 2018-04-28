@@ -1,13 +1,16 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '0.4.6';
+  var _version = '0.4.7';
   var i, j, k, m, n;
 
   var _time = Date.now || function () { return new Date().getTime(); };
   var _startTime = _time();
   var _now = typeof performance != 'undefined' && performance.now ?
     function() { return performance.now(); } : function() { return _time() - _startTime; };
+  var _schedule = function(f) {
+    setTimeout(f, 0);
+  };
 
   // _R: common root for all async objects
   function _R() {
@@ -125,14 +128,6 @@ function _JZZ() {
     _R.apply(this);
   }
   _J.prototype = new _R();
-
-  _J.prototype.time = function() { return 0; };
-  if (typeof performance != 'undefined' && performance.now) _J.prototype._time = function() { return performance.now(); };
-  function _initTimer() {
-    if (!_J.prototype._time) _J.prototype._time = function() { return Date.now(); };
-    _J.prototype._startTime = _J.prototype._time();
-    _J.prototype.time = function() { return _J.prototype._time() - _J.prototype._startTime; };
-  }
 
   function _clone(obj, key, val) {
     if (typeof key == 'undefined') return _clone(obj, [], []);
@@ -622,7 +617,6 @@ function _JZZ() {
     _jzz._options = opt;
     _jzz._push(_tryAny, [_filterEngines(opt)]);
     _jzz.refresh();
-    _jzz._push(_initTimer, []);
     _jzz._push(function(){ if (!_outs.length && !_ins.length) this._break(); }, []);
     _jzz._resume();
   }
@@ -797,7 +791,6 @@ function _JZZ() {
       _engine._main.OnDisconnectMidiIn();
       _engine._main.OnDisconnectMidiOut();
     };
-    _J.prototype._time = function() { return _engine._main.Time(); };
   }
 
   function _initNode(obj) {
@@ -1179,7 +1172,6 @@ function _JZZ() {
     if (!_jzz) _initJZZ(opt);
     return _jzz;
   };
-  JZZ.now = _now;
   JZZ.info = function() { return _J.prototype.info();};
   JZZ.Widget = function(arg) {
     var obj = new _M();
@@ -1806,6 +1798,8 @@ function _JZZ() {
   JZZ.MPE = MPE;
 
   JZZ.lib = {};
+  JZZ.lib.now = _now;
+  JZZ.lib.schedule = _schedule;
   JZZ.lib.openMidiOut = function(name, engine) {
     var port = new _M();
     engine._openOut(port, name);
