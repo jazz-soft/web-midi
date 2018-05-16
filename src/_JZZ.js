@@ -1,7 +1,7 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '0.4.7';
+  var _version = '0.4.8';
   var i, j, k, m, n;
 
   var _time = Date.now || function () { return new Date().getTime(); };
@@ -351,6 +351,9 @@ function _JZZ() {
     this._push(_disconnect, [arg]);
     return this;
   };
+  _M.prototype.connected = function() {
+    return this._orig._handles.length + this._orig._outs.length;
+  };
   _M.prototype.ch = function(n) {
     if (typeof n == 'undefined') return this;
     if (n != parseInt(n) || n < 0 || n > 15) throw RangeError('Bad channel value: ' + n  + ' (must be from 0 to 15)');
@@ -507,7 +510,7 @@ function _JZZ() {
   }
   // Web MIDI API
   function _tryWebMIDI() {
-    if (navigator.requestMIDIAccess) {
+    if (navigator.requestMIDIAccess && navigator.requestMIDIAccess != JZZ.requestMIDIAccess) {
       var self = this;
       var onGood = function(midi) {
         _initWebMIDI(midi);
