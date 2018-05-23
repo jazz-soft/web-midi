@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Jazz-Soft</string>
 	<key>Builder Version</key>
-	<string>13605.1.33.1.2</string>
+	<string>13605.1.33.1.4</string>
 	<key>CFBundleDisplayName</key>
 	<string>Web MIDI API</string>
 	<key>CFBundleIdentifier</key>
@@ -45,5 +45,7 @@
 	</dict>
 	<key>Website</key>
 	<string>https://jazz-soft.net</string>
+	<key>Update From Gallery</key>
+	<true/>
 </dict>
 </plist>
