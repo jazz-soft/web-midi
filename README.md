@@ -12,7 +12,7 @@ This add-on requires
 ## Safari
 
 While the extension is under approval by Apple,
-it is available [**here**](https://jazz-soft.net/download/web-midi/web-midi.safariextz).  
+it is available [**here**](https://jazz-soft.net/download/web-midi/web-midi-api.1.0.1.1.safariextz).  
 This extension requires
 [**Jazz-Plugin**](https://jazz-soft.net).
 
