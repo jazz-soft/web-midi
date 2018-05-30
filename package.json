@@ -6,7 +6,7 @@
     "grunt": "^1.0.2",
     "grunt-contrib-jshint": "^1.1.0",
     "grunt-contrib-uglify": "^3.3.0",
-    "jzz": "^0.4.8"
+    "jzz": "^0.4.9"
   },
   "private": true
 }
