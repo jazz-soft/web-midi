@@ -28,7 +28,7 @@
 		</dict>
 	</dict>
 	<key>Description</key>
-	<string>Web MIDI API for Safari</string>
+	<string>Enable Web MIDI API in Safari</string>
 	<key>DeveloperIdentifier</key>
 	<string>76EXZ289MK</string>
 	<key>ExtensionInfoDictionaryVersion</key>
@@ -43,9 +43,9 @@
 			<string>All</string>
 		</dict>
 	</dict>
-	<key>Website</key>
-	<string>https://jazz-soft.net</string>
 	<key>Update From Gallery</key>
 	<true/>
+	<key>Website</key>
+	<string>https://jazz-soft.net</string>
 </dict>
 </plist>
