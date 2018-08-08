@@ -1,5 +1,5 @@
 # web-midi
-[**Web MIDI API**](http://webaudio.github.io/web-midi-api/)
+[**Web MIDI API**](https://webaudio.github.io/web-midi-api/)
 for browsers
 
 ## Firefox
