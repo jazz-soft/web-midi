@@ -4,9 +4,9 @@
   "description": "Web MIDI API for browsers",
   "devDependencies": {
     "grunt": "^1.0.3",
-    "grunt-contrib-jshint": "^1.1.0",
-    "grunt-contrib-uglify": "^3.4.0",
-    "jzz": "^0.5.3"
+    "grunt-contrib-jshint": "^2.0.0",
+    "grunt-contrib-uglify": "^4.0.0",
+    "jzz": "^0.6.3"
   },
   "private": true
 }
