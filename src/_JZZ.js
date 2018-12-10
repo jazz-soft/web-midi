@@ -1,7 +1,7 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '0.6.3';
+  var _version = '0.6.5';
   var i, j, k, m, n;
 
   var _time = Date.now || function () { return new Date().getTime(); };
@@ -696,7 +696,7 @@ function _JZZ() {
           },
           _close: function(port) { _engine._closeOut(port); },
           _closeAll: _closeAll,
-          _receive: function(a) { this.plugin.MidiOutRaw(a.slice()); }
+          _receive: function(a) { if (a.length) this.plugin.MidiOutRaw(a.slice()); }
         };
         var plugin = _engine._pool[_engine._outArr.length];
         impl.plugin = plugin;
@@ -880,7 +880,7 @@ function _JZZ() {
           },
           _close: function(port) { _engine._closeOut(port); },
           _closeAll: _closeAll,
-          _receive: function(a) { if (impl.dev) this.dev.send(a.slice()); }
+          _receive: function(a) { if (impl.dev && a.length) this.dev.send(a.slice()); }
         };
       }
       var found;
@@ -1024,7 +1024,7 @@ function _JZZ() {
           _start: function() { document.dispatchEvent(new CustomEvent('jazz-midi', { detail: ['openout', plugin.id, name] })); },
           _close: function(port) { _engine._closeOut(port); },
           _closeAll: _closeAll,
-          _receive: function(a) { var v = a.slice(); v.splice(0, 0, 'play', plugin.id); document.dispatchEvent(new CustomEvent('jazz-midi', {detail: v})); }
+          _receive: function(a) { if (a.length) { var v = a.slice(); v.splice(0, 0, 'play', plugin.id); document.dispatchEvent(new CustomEvent('jazz-midi', {detail: v})); } }
         };
         impl.plugin = plugin;
         plugin.output = impl;
@@ -1590,8 +1590,7 @@ function _JZZ() {
     smfSMPTE: function(dd) {
       if (dd instanceof SMPTE) return _smf(84, String.fromCharCode(dd.hour) + String.fromCharCode(dd.minute) + String.fromCharCode(dd.second) + String.fromCharCode(dd.frame) + String.fromCharCode((dd.quarter % 4) * 25));
       var s = '' + dd;
-      if (s.length == 5 && s.charCodeAt(4) < 100) {
-        new SMPTE(30, s.charCodeAt(0), s.charCodeAt(1), s.charCodeAt(2), s.charCodeAt(3), s.charCodeAt(4) / 25);
+      if (s.length == 5) {
         return _smf(84, dd);
       }
       var arr = dd instanceof Array ? dd : Array.prototype.slice.call(arguments);

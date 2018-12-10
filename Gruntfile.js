@@ -8,7 +8,7 @@ module.exports = function(grunt) {
       src: 'node_modules/jzz/javascript/JZZ.js',
       dest: 'src/_JZZ.js'
     },
-    uglify: {
+    copy: {
       firefox: {
         expand: true,
         cwd: 'src',
@@ -23,8 +23,8 @@ module.exports = function(grunt) {
       }
     }
   });
-  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.registerTask('import', require('./src/tools/import.js')(grunt));
-  grunt.registerTask('default', ['import', 'uglify']);
+  grunt.registerTask('default', ['import', 'copy']);
 };
