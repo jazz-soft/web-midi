@@ -1,7 +1,7 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '0.7.4';
+  var _version = '0.7.7';
   var i, j, k, m, n;
 
   var _time = Date.now || function () { return new Date().getTime(); };
@@ -565,7 +565,7 @@ function _JZZ() {
     var self = this;
     var inst;
     var msg;
-    function eventHandle(e) {
+    function eventHandle() {
       inst = true;
       if (!msg) msg = document.getElementById('jazz-midi-msg');
       if (!msg) return;
@@ -584,7 +584,7 @@ function _JZZ() {
     this._pause();
     document.addEventListener('jazz-midi-msg', eventHandle);
     try { document.dispatchEvent(new Event('jazz-midi')); } catch (err) {}
-    window.setTimeout(function() { if (!inst) self._crash(); }, 0);
+    setTimeout(function() { if (!inst) self._crash(); }, 0);
   }
 
   function _zeroBreak() {
@@ -594,13 +594,14 @@ function _JZZ() {
   }
 
   function _filterEngines(opt) {
-    var ret = [_tryNODE, _zeroBreak];
+    var ret = [];
     var arr = _filterEngineNames(opt);
     for (var i = 0; i < arr.length; i++) {
       if (arr[i] == 'webmidi') {
         if (opt && opt.sysex === true) ret.push(_tryWebMIDIsysex);
         if (!opt || opt.sysex !== true || opt.degrade === true) ret.push(_tryWebMIDI);
       }
+      else if (arr[i] == 'node') { ret.push(_tryNODE); ret.push(_zeroBreak); }
       else if (arr[i] == 'extension') ret.push(_tryCRX);
       else if (arr[i] == 'plugin') ret.push(_tryJazzPlugin);
     }
@@ -609,7 +610,7 @@ function _JZZ() {
   }
 
   function _filterEngineNames(opt) {
-    var web = ['extension', 'plugin', 'webmidi'];
+    var web = ['node', 'extension', 'plugin', 'webmidi'];
     if (!opt || !opt.engine) return web;
     var arr = opt.engine instanceof Array ? opt.engine : [opt.engine];
     var dup = {};
@@ -664,7 +665,7 @@ function _JZZ() {
     _engine._refresh = function() {
       _engine._outs = [];
       _engine._ins = [];
-      var i, x;
+      var i, x, impl;
       for (i = 0; (x = _engine._main.MidiOutInfo(i)).length; i++) {
         _engine._outs.push({ type: _engine._type, name: x[0], manufacturer: x[1], version: x[2] });
       }
@@ -794,7 +795,7 @@ function _JZZ() {
         watcher = false;
       }
     }
-    function watch(name) {
+    function watch() {
       watcher = true;
       setTimeout(onChange, 0);
     }
@@ -850,14 +851,15 @@ function _JZZ() {
     _engine._refresh = function() {
       _engine._outs = [];
       _engine._ins = [];
-      _engine._access.outputs.forEach(function(port, key) {
+      _engine._access.outputs.forEach(function(port) {
         _engine._outs.push({type: _engine._type, name: port.name, manufacturer: port.manufacturer, version: port.version});
       });
-      _engine._access.inputs.forEach(function(port, key) {
+      _engine._access.inputs.forEach(function(port) {
         _engine._ins.push({type: _engine._type, name: port.name, manufacturer: port.manufacturer, version: port.version});
       });
       var diff = _diff(_engine._insW, _engine._outsW, _engine._ins, _engine._outs);
       if (diff) {
+        var impl;
         for (j = 0; j < diff.inputs.removed.length; j++) {
           impl = _engine._inMap[diff.inputs.removed[j].name];
           if (impl) impl._closeAll();
@@ -891,7 +893,7 @@ function _JZZ() {
         };
       }
       var found;
-      _engine._access.outputs.forEach(function(dev, key) {
+      _engine._access.outputs.forEach(function(dev) {
         if (dev.name === name) found = dev;
       });
       if (found) {
@@ -931,7 +933,7 @@ function _JZZ() {
         };
       }
       var found;
-      _engine._access.inputs.forEach(function(dev, key) {
+      _engine._access.inputs.forEach(function(dev) {
         if (dev.name === name) found = dev;
       });
       if (found) {
@@ -1112,7 +1114,7 @@ function _JZZ() {
       clearInterval(watcher);
       watcher = undefined;
     };
-    document.addEventListener('jazz-midi-msg', function(e) {
+    document.addEventListener('jazz-midi-msg', function() {
       var v = _engine._msg.innerText.split('\n');
       var impl, i, j;
       _engine._msg.innerText = '';
@@ -2150,7 +2152,7 @@ function _JZZ() {
     var chr1, chr2, chr3;
     var enc1, enc2, enc3, enc4;
     var i = 0;
-    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
+    input = input.replace(/[^A-Za-z0-9+/=]/g, '');
     while (i < input.length) {
       enc1 = _b64.indexOf(input.charAt(i++));
       enc2 = _b64.indexOf(input.charAt(i++));
@@ -2489,7 +2491,7 @@ function _JZZ() {
         else return;
       }
       if (timestamp > _now()) {
-        setTimeout(function() { port.send(v); }, timestamp - _now()); 
+        setTimeout(function() { port.send(v); }, timestamp - _now());
       }
       else port.send(v);
     }
@@ -2564,7 +2566,7 @@ function _JZZ() {
     var counter;
     function ready() { _wma = wma; for (var i = 0; i < _resolves.length; i++) _resolves[i](_wma); }
     function countdown() { counter--; if (!counter) ready(); }
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve /*, reject*/) {
       if (_wma) resolve(_wma);
       else {
         _resolves.push(resolve);

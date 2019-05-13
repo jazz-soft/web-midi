@@ -13,7 +13,8 @@ This add-on requires
 For Safari versions older than 9.0
 it is available [**here**](https://jazz-soft.net/download/web-midi/web-midi-api.1.0.1.2.safariextz).  
 This extension requires
-[**Jazz-Plugin**](https://jazz-soft.net).
+[**Jazz-Plugin**](https://jazz-soft.net).  
+For Safari versions 12 and up: work in progress...
 
 *Your comments and suggestions are [**welcome**](https://jazz-soft.org).  
 We would really appreciate your [**support**](https://jazz-soft.net/donate)!*
