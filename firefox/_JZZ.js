@@ -1,7 +1,7 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '0.8.7';
+  var _version = '0.8.8';
   var i, j, k, m, n;
 
   var _time = Date.now || function () { return new Date().getTime(); };
@@ -2349,20 +2349,13 @@ function _JZZ() {
       }
     };
   }
-  function generateUUID() {
-    var a = new Array(64);
-    for (var i = 0; i < 64; i++) {
-      a[i] = Math.floor((Math.random() * 16) % 16).toString(16).toUpperCase();
-    }
-    return a.join('');
-  }
   function getUUID(name, input) {
     if (input) {
-      if (!_inputUUID[name]) _inputUUID[name] = generateUUID();
+      _inputUUID[name] = name;
       return _inputUUID[name];
     }
     else {
-      if (!_outputUUID[name]) _outputUUID[name] = generateUUID();
+      _outputUUID[name] = name;
       return _outputUUID[name];
     }
   }
