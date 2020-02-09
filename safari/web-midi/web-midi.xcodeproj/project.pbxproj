@@ -1,0 +1,488 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A2ED513B23EFBA1200407205 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2ED513A23EFBA1200407205 /* AppDelegate.swift */; };
+		A2ED513D23EFBA1200407205 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2ED513C23EFBA1200407205 /* Assets.xcassets */; };
+		A2ED514023EFBA1200407205 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A2ED513E23EFBA1200407205 /* MainMenu.xib */; };
+		A2ED514F23EFBA5900407205 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2ED514E23EFBA5900407205 /* Cocoa.framework */; };
+		A2ED515223EFBA5900407205 /* SafariExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2ED515123EFBA5900407205 /* SafariExtensionHandler.swift */; };
+		A2ED516023EFBA5900407205 /* extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A2ED514C23EFBA5900407205 /* extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A2ED516723EFBEEB00407205 /* _JZZ.js in Resources */ = {isa = PBXBuildFile; fileRef = A2ED516523EFBEEB00407205 /* _JZZ.js */; };
+		A2ED516823EFBEEB00407205 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = A2ED516623EFBEEB00407205 /* content.js */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A2ED515E23EFBA5900407205 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A2ED512F23EFBA1100407205 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A2ED514B23EFBA5900407205;
+			remoteInfo = extension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A2ED516423EFBA5900407205 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A2ED516023EFBA5900407205 /* extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A2ED513723EFBA1200407205 /* web-midi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "web-midi.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2ED513A23EFBA1200407205 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A2ED513C23EFBA1200407205 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A2ED513F23EFBA1200407205 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		A2ED514123EFBA1200407205 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2ED514223EFBA1200407205 /* web_midi.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = web_midi.entitlements; sourceTree = "<group>"; };
+		A2ED514C23EFBA5900407205 /* extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = extension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2ED514E23EFBA5900407205 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		A2ED515123EFBA5900407205 /* SafariExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariExtensionHandler.swift; sourceTree = "<group>"; };
+		A2ED515823EFBA5900407205 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2ED515D23EFBA5900407205 /* extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = extension.entitlements; sourceTree = "<group>"; };
+		A2ED516523EFBEEB00407205 /* _JZZ.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = _JZZ.js; sourceTree = "<group>"; };
+		A2ED516623EFBEEB00407205 /* content.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = content.js; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A2ED513423EFBA1200407205 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A2ED514923EFBA5900407205 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2ED514F23EFBA5900407205 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A2ED512E23EFBA1100407205 = {
+			isa = PBXGroup;
+			children = (
+				A2ED513923EFBA1200407205 /* web-midi */,
+				A2ED515023EFBA5900407205 /* extension */,
+				A2ED514D23EFBA5900407205 /* Frameworks */,
+				A2ED513823EFBA1200407205 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A2ED513823EFBA1200407205 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A2ED513723EFBA1200407205 /* web-midi.app */,
+				A2ED514C23EFBA5900407205 /* extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A2ED513923EFBA1200407205 /* web-midi */ = {
+			isa = PBXGroup;
+			children = (
+				A2ED513A23EFBA1200407205 /* AppDelegate.swift */,
+				A2ED513C23EFBA1200407205 /* Assets.xcassets */,
+				A2ED513E23EFBA1200407205 /* MainMenu.xib */,
+				A2ED514123EFBA1200407205 /* Info.plist */,
+				A2ED514223EFBA1200407205 /* web_midi.entitlements */,
+			);
+			path = "web-midi";
+			sourceTree = "<group>";
+		};
+		A2ED514D23EFBA5900407205 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A2ED514E23EFBA5900407205 /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A2ED515023EFBA5900407205 /* extension */ = {
+			isa = PBXGroup;
+			children = (
+				A2ED516523EFBEEB00407205 /* _JZZ.js */,
+				A2ED516623EFBEEB00407205 /* content.js */,
+				A2ED515123EFBA5900407205 /* SafariExtensionHandler.swift */,
+				A2ED515823EFBA5900407205 /* Info.plist */,
+				A2ED515D23EFBA5900407205 /* extension.entitlements */,
+			);
+			path = extension;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A2ED513623EFBA1200407205 /* web-midi */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A2ED514523EFBA1200407205 /* Build configuration list for PBXNativeTarget "web-midi" */;
+			buildPhases = (
+				A2ED513323EFBA1200407205 /* Sources */,
+				A2ED513423EFBA1200407205 /* Frameworks */,
+				A2ED513523EFBA1200407205 /* Resources */,
+				A2ED516423EFBA5900407205 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A2ED515F23EFBA5900407205 /* PBXTargetDependency */,
+			);
+			name = "web-midi";
+			productName = "web-midi";
+			productReference = A2ED513723EFBA1200407205 /* web-midi.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A2ED514B23EFBA5900407205 /* extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A2ED516123EFBA5900407205 /* Build configuration list for PBXNativeTarget "extension" */;
+			buildPhases = (
+				A2ED514823EFBA5900407205 /* Sources */,
+				A2ED514923EFBA5900407205 /* Frameworks */,
+				A2ED514A23EFBA5900407205 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = extension;
+			productName = extension;
+			productReference = A2ED514C23EFBA5900407205 /* extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A2ED512F23EFBA1100407205 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1010;
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "Jazz-Soft";
+				TargetAttributes = {
+					A2ED513623EFBA1200407205 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+					A2ED514B23EFBA5900407205 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+				};
+			};
+			buildConfigurationList = A2ED513223EFBA1100407205 /* Build configuration list for PBXProject "web-midi" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A2ED512E23EFBA1100407205;
+			productRefGroup = A2ED513823EFBA1200407205 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A2ED513623EFBA1200407205 /* web-midi */,
+				A2ED514B23EFBA5900407205 /* extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A2ED513523EFBA1200407205 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2ED513D23EFBA1200407205 /* Assets.xcassets in Resources */,
+				A2ED514023EFBA1200407205 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A2ED514A23EFBA5900407205 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2ED516723EFBEEB00407205 /* _JZZ.js in Resources */,
+				A2ED516823EFBEEB00407205 /* content.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A2ED513323EFBA1200407205 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2ED513B23EFBA1200407205 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A2ED514823EFBA5900407205 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2ED515223EFBA5900407205 /* SafariExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A2ED515F23EFBA5900407205 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A2ED514B23EFBA5900407205 /* extension */;
+			targetProxy = A2ED515E23EFBA5900407205 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		A2ED513E23EFBA1200407205 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A2ED513F23EFBA1200407205 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A2ED514323EFBA1200407205 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A2ED514423EFBA1200407205 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		A2ED514623EFBA1200407205 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "web-midi/web_midi.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "web-midi/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Jazz-Soft.web-midi";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+			};
+			name = Debug;
+		};
+		A2ED514723EFBA1200407205 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "web-midi/web_midi.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "web-midi/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Jazz-Soft.web-midi";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+			};
+			name = Release;
+		};
+		A2ED516223EFBA5900407205 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = extension/extension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = extension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Jazz-Soft.web-midi.extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Debug;
+		};
+		A2ED516323EFBA5900407205 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = extension/extension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = extension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Jazz-Soft.web-midi.extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A2ED513223EFBA1100407205 /* Build configuration list for PBXProject "web-midi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A2ED514323EFBA1200407205 /* Debug */,
+				A2ED514423EFBA1200407205 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A2ED514523EFBA1200407205 /* Build configuration list for PBXNativeTarget "web-midi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A2ED514623EFBA1200407205 /* Debug */,
+				A2ED514723EFBA1200407205 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A2ED516123EFBA5900407205 /* Build configuration list for PBXNativeTarget "extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A2ED516223EFBA5900407205 /* Debug */,
+				A2ED516323EFBA5900407205 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A2ED512F23EFBA1100407205 /* Project object */;
+}
