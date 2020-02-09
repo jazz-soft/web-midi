@@ -19,7 +19,13 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'src',
         src: '*.js',
-        dest: 'safari/web-midi-api.safariextension'
+        dest: 'safari/web-midi.safariextension'
+      },
+      safari12: {
+        expand: true,
+        cwd: 'src',
+        src: '*.js',
+        dest: 'safari/web-midi/extension'
       }
     }
   });
