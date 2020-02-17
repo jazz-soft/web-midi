@@ -13,7 +13,7 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'src',
         src: '*.js',
-        dest: 'firefox'
+        dest: 'firefox/web-midi'
       },
       safari: {
         expand: true,
