@@ -1,8 +1,9 @@
 {
   "manifest_version": 2,
-  "name": "Web MIDI API",
-  "description": "Web MIDI API",
+  "name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
   "version": "1.0.1.9",
   "content_scripts": [{"matches": ["<all_urls>"], "js": ["_JZZ.js", "content.js"], "all_frames": true, "run_at": "document_start"}],
-  "homepage_url": "http://jazz-soft.net"
+  "default_locale": "en",
+  "homepage_url": "https://jazz-soft.net"
 }

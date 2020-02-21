@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "Web MIDI API",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "Enables Web MIDI API",
+    "description": "Description of the extension"
+  }
+}
