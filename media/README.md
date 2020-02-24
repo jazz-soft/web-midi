@@ -16,7 +16,7 @@ To add a new language, for example, **zz (Klingon)**:
 **NO GOOGLE TRANSLATE PLEASE!**
 
 We also need your help to ensure that the existing translations are in sync with the English version,
-ree from typos and don't sound awkward.
+free from typos and don't sound awkward.
 
 ### Currently available:
 
