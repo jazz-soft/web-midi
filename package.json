@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "description": "Web MIDI API for browsers",
   "devDependencies": {
-    "grunt": "^1.0.4",
+    "grunt": "^1.1.0",
     "grunt-contrib-jshint": "^2.1.0",
     "grunt-contrib-copy": "^1.0.0",
-    "jzz": "^1.0.2"
+    "jzz": "^1.0.3"
   },
   "private": true
 }
