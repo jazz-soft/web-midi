@@ -23,6 +23,8 @@ free from typos and don't sound awkward.
 [**en (English)**](en.md)  
 [**ru (Russian)**](ru.md)  
 
+[Privacy Policy](PRIVACY.md)  
+
 ## Images
 
 #### icon128.png
