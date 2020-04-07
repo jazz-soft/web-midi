@@ -1,7 +1,7 @@
 # Privacy Policy
 
-## Web MIDI
-![Web MIDI](256.png)
+## Web MIDI API
+![Web MIDI API](256.png)
 
 ## This app and extension collect no user data.
 

@@ -50,3 +50,6 @@ free from typos and don't sound awkward.
 
 #### 1024.png
 ![1024x1024](1024.png)
+
+#### safari-install-2560-1600.png
+![safari-install-2560-1600](safari-install-2560-1600.png)
