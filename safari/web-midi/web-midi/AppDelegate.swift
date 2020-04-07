@@ -5,7 +5,7 @@ import SafariServices.SFSafariApplication
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         SFSafariApplication.showPreferencesForExtension(
-            withIdentifier: "Jazz-Soft.web-midi.extension",
+            withIdentifier: "com.jazz-soft.web-midi.extension",
             completionHandler: { (_: Error?) -> Void in  sleep(1); NSApp.terminate(nil); });
     }
 }
