@@ -1,7 +1,7 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '1.0.2';
+  var _version = '1.0.8';
   var i, j, k, m, n;
 
   var _time = Date.now || function () { return new Date().getTime(); };
@@ -549,8 +549,8 @@ function _JZZ() {
   }
 
   var _jzz;
-  var _engine = {};
-  var _virtual = { _outs: [], _ins: []};
+  var _engine = { _outs: [], _ins: [] };
+  var _virtual = { _outs: [], _ins: [] };
 
   // Node.js
   function _tryNODE() {
@@ -1044,7 +1044,7 @@ function _JZZ() {
       var plugin = { id: _engine._pool.length };
       _engine._pool.push(plugin);
       if (!plugin.id) plugin.ready = true;
-      else document.dispatchEvent(new CustomEvent('jazz-midi', {detail:['new']}));
+      else document.dispatchEvent(new CustomEvent('jazz-midi', { detail: ['new'] }));
     };
     _engine._newPlugin();
     _engine._refresh = function(client) {
@@ -1225,6 +1225,7 @@ function _JZZ() {
     return _jzz._thenable();
   };
   JZZ.JZZ = JZZ;
+  JZZ.version = _version;
   JZZ.info = function() { return _J.prototype.info(); };
   JZZ.Widget = function(arg) {
     var obj = new _M();

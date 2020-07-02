@@ -9,11 +9,9 @@ This extension requires
 [**Jazz-Plugin**](https://jazz-soft.net).
 
 ## Safari
-[Get the **Web MIDI API** extension from **Apple App Store**](https://apps.apple.com/us/app/web-midi/id1507500927
-).  
+[Get the **Web MIDI API** extension from **Apple App Store**](https://apps.apple.com/us/app/web-midi/id1507500927).  
 This extension requires
-[**Jazz-MIDI**](https://apps.apple.com/us/app/jazz-midi/id1506447231
-).
+[**Jazz-MIDI**](https://apps.apple.com/us/app/jazz-midi/id1506447231).
 
 For Safari v.11 and older:
 Apple have removed the old style extensions from the App Store,  
