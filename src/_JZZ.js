@@ -1,7 +1,7 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '1.0.8';
+  var _version = '1.0.9';
   var i, j, k, m, n;
 
   var _time = Date.now || function () { return new Date().getTime(); };
