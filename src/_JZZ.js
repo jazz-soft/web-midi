@@ -1,7 +1,7 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '1.0.9';
+  var _version = '1.1.6';
   var i, j, k, m, n;
 
   var _time = Date.now || function () { return new Date().getTime(); };
@@ -1234,6 +1234,42 @@ function _JZZ() {
     return obj;
   };
   _J.prototype.Widget = JZZ.Widget;
+  JZZ.addMidiIn = function(name, widget) {
+    var info = _clone(widget._info || {});
+    info.name = name;
+    info.type = info.type || 'javascript';
+    info.manufacturer = info.manufacturer || 'virtual';
+    info.version = info.version || '0.0';
+    var engine = {
+      _info: function() { return info; },
+      _openIn: function(port) {
+        port._pause();
+        port._info = _clone(info);
+        port._close = function() { widget.disconnect(port); };
+        widget.connect(port);
+        port._resume();
+      }
+    };
+    return JZZ.lib.registerMidiIn(name, engine);
+  };
+  JZZ.addMidiOut = function(name, widget) {
+    var info = _clone(widget._info || {});
+    info.name = name;
+    info.type = info.type || 'javascript';
+    info.manufacturer = info.manufacturer || 'virtual';
+    info.version = info.version || '0.0';
+    var engine = {
+      _info: function() { return info; },
+      _openOut: function(port) {
+        port._pause();
+        port._info = _clone(info);
+        port._close = function() { port.disconnect(); };
+        _connect.apply(port, [widget]);
+        port._resume();
+      }
+    };
+    return JZZ.lib.registerMidiOut(name, engine);
+  };
 
   // JZZ.SMPTE
 
@@ -1483,6 +1519,7 @@ function _JZZ() {
     if (typeof a == 'undefined') a = 440.0;
     return (a * Math.pow(2, (_7b(MIDI.noteValue(n), n) - 69.0) / 12.0));
   };
+  MIDI.to14b = function(x) { return x <= 0 ? 0 : x >= 1 ? 0x3fff : Math.floor(x * 0x4000); };
 
   var _noteMap = { c:0, d:2, e:4, f:5, g:7, a:9, b:11, h:11 };
   for (k in _noteMap) {
@@ -1510,7 +1547,8 @@ function _JZZ() {
     control: function(c, n, v) { return [0xB0 + _ch(c), _7b(n), _7b(v)]; },
     program: function(c, n) { return [0xC0 + _ch(c), _7b(MIDI.programValue(n), n)]; },
     pressure: function(c, n) { return [0xD0 + _ch(c), _7b(n)]; },
-    pitchBend: function(c, n) { return [0xE0 + _ch(c), _lsb(n), _msb(n)]; },
+    pitchBend: function(c, n, l) { return typeof l == 'undefined' ? [0xE0 + _ch(c), _lsb(n), _msb(n)] : [0xE0 + _ch(c), _7b(l), _7b(n)]; },
+    pitchBendF: function(c, x) { return _helperCH.pitchBend(c, MIDI.to14b((x + 1) / 2)); },
     bankMSB: function(c, n) { return [0xB0 + _ch(c), 0x00, _7b(n)]; },
     bankLSB: function(c, n) { return [0xB0 + _ch(c), 0x20, _7b(n)]; },
     modMSB: function(c, n) { return [0xB0 + _ch(c), 0x01, _7b(n)]; },
@@ -1521,6 +1559,8 @@ function _JZZ() {
     footLSB: function(c, n) { return [0xB0 + _ch(c), 0x24, _7b(n)]; },
     portamentoMSB: function(c, n) { return [0xB0 + _ch(c), 0x05, _7b(n)]; },
     portamentoLSB: function(c, n) { return [0xB0 + _ch(c), 0x25, _7b(n)]; },
+    dataMSB: function(c, n) { return [0xB0 + _ch(c), 0x06, _7b(n)]; },
+    dataLSB: function(c, n) { return [0xB0 + _ch(c), 0x26, _7b(n)]; },
     volumeMSB: function(c, n) { return [0xB0 + _ch(c), 0x07, _7b(n)]; },
     volumeLSB: function(c, n) { return [0xB0 + _ch(c), 0x27, _7b(n)]; },
     balanceMSB: function(c, n) { return [0xB0 + _ch(c), 0x08, _7b(n)]; },
@@ -1533,12 +1573,18 @@ function _JZZ() {
     portamento: function(c, b) { return [0xB0 + _ch(c), 0x41, b ? 127 : 0]; },
     sostenuto: function(c, b) { return [0xB0 + _ch(c), 0x42, b ? 127 : 0]; },
     soft: function(c, b) { return [0xB0 + _ch(c), 0x43, b ? 127 : 0]; },
+    dataIncr: function(c) { return [0xB0 + _ch(c), 0x60, 0]; },
+    dataDecr: function(c) { return [0xB0 + _ch(c), 0x61, 0]; },
+    nrpnLSB: function(c, n) { return [0xB0 + _ch(c), 0x62, _7b(n)]; },
+    nrpnMSB: function(c, n) { return [0xB0 + _ch(c), 0x63, _7b(n)]; },
+    rpnLSB: function(c, n) { return [0xB0 + _ch(c), 0x64, _7b(n)]; },
+    rpnMSB: function(c, n) { return [0xB0 + _ch(c), 0x65, _7b(n)]; },
     allSoundOff: function(c) { return [0xB0 + _ch(c), 0x78, 0]; },
     allNotesOff: function(c) { return [0xB0 + _ch(c), 0x7b, 0]; },
   };
   var _helperNC = { // no channel
     mtc: function(t) { return [0xF1, _mtc(t)]; },
-    songPosition: function(n) { return [0xF2, _lsb(n), _msb(n)]; },
+    songPosition: function(n, l) { return typeof l == 'undefined' ? [0xF2, _lsb(n), _msb(n)] : [0xF2, _7b(l), _7b(n)]; },
     songSelect: function(n) { return [0xF3, _7b(n)]; },
     tune: function() { return [0xF6]; },
     clock: function() { return [0xF8]; },
@@ -1549,6 +1595,41 @@ function _JZZ() {
     sxIdRequest: function() { return [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7]; },
     sxFullFrame: function(t) { return [0xF0, 0x7F, 0x7F, 0x01, 0x01, _hrtype(t), t.getMinute(), t.getSecond(), t.getFrame(), 0xF7]; },
     reset: function() { return [0xFF]; },
+  };
+  var _helperG = { // compound messages
+    bank: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.bankMSB(c, _msb(m)), _helperCH.bankLSB(c, _lsb(m))] : [_helperCH.bankMSB(c, m), _helperCH.bankLSB(c, l)]; },
+    modF: function(c, x) { return _helperG.mod(c, MIDI.to14b(x)); },
+    mod: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.modMSB(c, _msb(m)), _helperCH.modLSB(c, _lsb(m))] : [_helperCH.modMSB(c, m), _helperCH.modLSB(c, l)]; },
+    breathF: function(c, x) { return _helperG.breath(c, MIDI.to14b(x)); },
+    breath: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.breathMSB(c, _msb(m)), _helperCH.breathLSB(c, _lsb(m))] : [_helperCH.breathMSB(c, m), _helperCH.breathLSB(c, l)]; },
+    footF: function(c, x) { return _helperG.foot(c, MIDI.to14b(x)); },
+    foot: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.footMSB(c, _msb(m)), _helperCH.footLSB(c, _lsb(m))] : [_helperCH.footMSB(c, m), _helperCH.footLSB(c, l)]; },
+    portamentoTimeF: function(c, x) { return _helperG.portamentoTime(c, MIDI.to14b(x)); },
+    portamentoTime: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.portamentoMSB(c, _msb(m)), _helperCH.portamentoLSB(c, _lsb(m))] : [_helperCH.portamentoMSB(c, m), _helperCH.portamentoLSB(c, l)]; },
+    dataF: function(c, x) { return _helperG.data(c, MIDI.to14b(x)); },
+    data: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.dataMSB(c, _msb(m)), _helperCH.dataLSB(c, _lsb(m))] : [_helperCH.dataMSB(c, m), _helperCH.dataLSB(c, l)]; },
+    volumeF: function(c, x) { return _helperG.volume(c, MIDI.to14b(x)); },
+    volume: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.volumeMSB(c, _msb(m)), _helperCH.volumeLSB(c, _lsb(m))] : [_helperCH.volumeMSB(c, m), _helperCH.volumeLSB(c, l)]; },
+    balanceF: function(c, x) { return _helperG.balance(c, MIDI.to14b((x + 1) / 2)); },
+    balance: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.balanceMSB(c, _msb(m)), _helperCH.balanceLSB(c, _lsb(m))] : [_helperCH.balanceMSB(c, m), _helperCH.balanceLSB(c, l)]; },
+    panF: function(c, x) { return _helperG.pan(c, MIDI.to14b((x + 1) / 2)); },
+    pan: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.panMSB(c, _msb(m)), _helperCH.panLSB(c, _lsb(m))] : [_helperCH.panMSB(c, m), _helperCH.panLSB(c, l)]; },
+    expressionF: function(c, x) { return _helperG.expression(c, MIDI.to14b(x)); },
+    expression: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.expressionMSB(c, _msb(m)), _helperCH.expressionLSB(c, _lsb(m))] : [_helperCH.expressionMSB(c, m), _helperCH.expressionLSB(c, l)]; },
+    nrpn: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.nrpnMSB(c, _msb(m)), _helperCH.nrpnLSB(c, _lsb(m))] : [_helperCH.nrpnMSB(c, m), _helperCH.nrpnLSB(c, l)]; },
+    rpn: function(c, m, l) { return typeof l == 'undefined' ?
+      [_helperCH.rpnMSB(c, _msb(m)), _helperCH.rpnLSB(c, _lsb(m))] : [_helperCH.rpnMSB(c, m), _helperCH.rpnLSB(c, l)]; },
   };
   function _smf(ff, dd) {
     var midi = new MIDI();
@@ -1684,11 +1765,27 @@ function _JZZ() {
   };
 
   function _copyPortHelper(M, name, func) {
-    M.prototype[name] = function() { this.send(func.apply(0, arguments)); return this; };
+    M.prototype[name] = function() { return this.send(func.apply(0, arguments)); };
+  }
+  function _copyPortHelperG(M, name, func) {
+    M.prototype[name] = function() {
+      var a = func.apply(0, arguments);
+      var g = this;
+      for (var i = 0; i < a.length; i++) g = g.send(a[i]);
+      return g;
+    };
   }
   function _copyChannelHelper(C, name, func) {
     C.prototype[name] = function() {
-      this.send(func.apply(0, [this._chan].concat(Array.prototype.slice.call(arguments)))); return this;
+      return this.send(func.apply(0, [this._chan].concat(Array.prototype.slice.call(arguments))));
+    };
+  }
+  function _copyChannelHelperG(C, name, func) {
+    C.prototype[name] = function() {
+      var a = func.apply(0, [this._chan].concat(Array.prototype.slice.call(arguments)));
+      var g = this;
+      for (var i = 0; i < a.length; i++) g = g.send(a[i]);
+      return g;
     };
   }
   function _copyHelperNC(name, func) {
@@ -1696,6 +1793,15 @@ function _JZZ() {
   }
   function _copyHelperSMF(name, func) {
     MIDI[name] = function() { return func.apply(0, arguments); };
+  }
+  function _copyHelperG(name, func) {
+    MIDI[name] = function() {
+      var i;
+      var g = [];
+      var a = func.apply(0, arguments);
+      for (i = 0; i < a.length; i++) g.push(new MIDI(a[i]));
+      return g;
+    };
   }
   function _copyHelperCH(name, func) {
     _copyHelperNC(name, func);
@@ -1716,11 +1822,16 @@ function _JZZ() {
   for (k in _helperNC) if (_helperNC.hasOwnProperty(k)) _copyHelperNC(k, _helperNC[k]);
   for (k in _helperSMF) if (_helperSMF.hasOwnProperty(k)) _copyHelperSMF(k, _helperSMF[k]);
   for (k in _helperCH) if (_helperCH.hasOwnProperty(k)) _copyHelperCH(k, _helperCH[k]);
+  for (k in _helperG) if (_helperG.hasOwnProperty(k)) _copyHelperG(k, _helperG[k]);
   function _copyMidiHelpers(M, C) {
     for (k in _helperNC) if (_helperNC.hasOwnProperty(k)) _copyPortHelper(M, k, _helperNC[k]);
     for (k in _helperSMF) if (_helperSMF.hasOwnProperty(k)) _copyPortHelper(M, k, _helperSMF[k]);
     for (k in _helperCH) if (_helperCH.hasOwnProperty(k)) _copyPortHelper(M, k, _helperCH[k]);
-    if (C) for (k in _helperCH) if (_helperCH.hasOwnProperty(k)) _copyChannelHelper(C, k, _helperCH[k]);
+    for (k in _helperG) if (_helperG.hasOwnProperty(k)) _copyPortHelperG(M, k, _helperG[k]);
+    if (C) {
+      for (k in _helperCH) if (_helperCH.hasOwnProperty(k)) _copyChannelHelper(C, k, _helperCH[k]);
+      for (k in _helperG) if (_helperG.hasOwnProperty(k)) _copyChannelHelperG(C, k, _helperG[k]);
+    }
   }
   _copyMidiHelpers(_M, _C);
 
@@ -2428,7 +2539,7 @@ function _JZZ() {
       set: function(value) {
         if (value instanceof Function) {
           _onmsg = value;
-          if (!_open) self.open();
+          if (!_open) try { self.open(); } catch(e) {/**/}
         }
         else _onmsg = null;
       },
