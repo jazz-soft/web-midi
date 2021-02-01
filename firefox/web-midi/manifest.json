@@ -3,7 +3,7 @@
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
   "author": "Jazz-Soft",
-  "version": "1.0.2.0",
+  "version": "1.0.2.1",
   "icons": {
     "128": "icon128.png"
   },
