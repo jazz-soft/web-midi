@@ -1,7 +1,7 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '1.2.1';
+  var _version = '1.2.2';
   var i, j, k, m, n;
 
   var _time = Date.now || function () { return new Date().getTime(); };
@@ -1673,6 +1673,15 @@ function _JZZ() {
     soft: function(c, b) { if (typeof b == 'undefined') b = true; return [0xB0 + _ch(c), 0x43, b ? 127 : 0]; },
     legato: function(c, b) { if (typeof b == 'undefined') b = true; return [0xB0 + _ch(c), 0x44, b ? 127 : 0]; },
     hold2: function(c, b) { if (typeof b == 'undefined') b = true; return [0xB0 + _ch(c), 0x45, b ? 127 : 0]; },
+    soundVariation: function(c, n) { return [0xB0 + _ch(c), 0x46, _7bn(n)]; },
+    filterResonance: function(c, n) { return [0xB0 + _ch(c), 0x47, _7bn(n)]; },
+    releaseTime: function(c, n) { return [0xB0 + _ch(c), 0x48, _7bn(n)]; },
+    attackTime: function(c, n) { return [0xB0 + _ch(c), 0x49, _7bn(n)]; },
+    brightness: function(c, n) { return [0xB0 + _ch(c), 0x4A, _7bn(n)]; },
+    decayTime: function(c, n) { return [0xB0 + _ch(c), 0x4B, _7bn(n)]; },
+    vibratoRate: function(c, n) { return [0xB0 + _ch(c), 0x4C, _7bn(n)]; },
+    vibratoDepth: function(c, n) { return [0xB0 + _ch(c), 0x4D, _7bn(n)]; },
+    vibratoDelay: function(c, n) { return [0xB0 + _ch(c), 0x4E, _7bn(n)]; },
     ptc: function(c, n) { return [0xB0 + _ch(c), 0x54, _7bn(n)]; },
     dataIncr: function(c) { return [0xB0 + _ch(c), 0x60, 0]; },
     dataDecr: function(c) { return [0xB0 + _ch(c), 0x61, 0]; },
@@ -1719,27 +1728,22 @@ function _JZZ() {
       _helperNC.sxNoteTuning.call(this, a, b, _hz2ntu(c), d) : _helperNC.sxNoteTuning.call(this, a, _hz2ntu(b)); },
     sxScaleTuning1: function(a, b, c) { return a == parseInt(a) ?
       [0xF0, _rt(c), this._sxid, 0x08, 0x08].concat(_to777(_16b(a)), _12x7(b), [0xF7]) :
-      _helperNC.sxScaleTuning1.call(this, 0xffff, a, b);
-    },
+      _helperNC.sxScaleTuning1.call(this, 0xffff, a, b); },
     sxScaleTuning1F: function(a, b, c) { if (a != parseInt(a)) return _helperNC.sxScaleTuning1F.call(this, 0xffff, a, b);
       var v = []; for (var i = 0; i < b.length; i++) {
         if (b[i] < -0.64 || b[i] > 0.63) throw RangeError('Out of range: ' + b[i]);
-        v.push(Math.floor(b[i] * 100 + 64));
-      }
-      return _helperNC.sxScaleTuning1.call(this, a, v, c);
-    },
+        v.push(Math.floor(b[i] * 100 + 64)); }
+      return _helperNC.sxScaleTuning1.call(this, a, v, c); },
     sxScaleTuning2: function(a, b, c) { return a == parseInt(a) ?
       [0xF0, _rt(c), this._sxid, 0x08, 0x09].concat(_to777(_16b(a)), _12x14(b), [0xF7]) :
-      _helperNC.sxScaleTuning2.call(this, 0xffff, a, b);
-    },
+      _helperNC.sxScaleTuning2.call(this, 0xffff, a, b); },
     sxScaleTuning2F: function(a, b, c) { if (a != parseInt(a)) return _helperNC.sxScaleTuning2F.call(this, 0xffff, a, b);
       var v = []; for (var i = 0; i < b.length; i++) {
         var x = (b[i] + 1) / 2;
         if (x < -1 || x > 1) throw RangeError('Out of range: ' + b[i]);
-        v.push(MIDI.to14b((b[i] + 1) / 2));
-      }
-      return _helperNC.sxScaleTuning2.call(this, a, v, c);
-    },
+        v.push(MIDI.to14b((b[i] + 1) / 2)); }
+      return _helperNC.sxScaleTuning2.call(this, a, v, c); },
+    sxGM: function(gm) { return [0xF0, 0x7E, this._sxid, 0x09, gm ? gm == 2 ? 3 : 1 : 2, 0xF7]; },
     reset: function() { return [0xFF]; },
   };
   _helperNC.sxScaleTuning = _helperNC.sxScaleTuning2;
@@ -1791,6 +1795,8 @@ function _JZZ() {
     rpnSelectTuningBank: function(c, n) { return _helperGCH.rpn(c, 0, 4).concat([_helperCH.dataMSB(c, n)]); },
     rpnSelectTuning: function(c, n, k) { return typeof k == 'undefined' ?
       _helperGCH.rpnSelectTuningProgram(c, n) : _helperGCH.rpnSelectTuningBank(c, n).concat(_helperGCH.rpnSelectTuningProgram(c, k)); },
+    rpnModulationDepthRange: function(c, m, l) { return _helperGCH.rpn(c, 0, 5).concat(_helperGCH.data(c, m, l)); },
+    rpnModulationDepthRangeF: function(c, x) { return _helperGCH.rpnModulationDepthRange(c, _7b(x - x % 1), Math.floor((x % 1) * 128)); },
     rpnNull: function(c) { return _helperGCH.rpn(c, 0x7f, 0x7f); },
   };
   var _helperGNC = { // compound messages no channel
@@ -2310,15 +2316,15 @@ function _JZZ() {
       67: 'Soft Pedal',
       68: 'Legato',
       69: 'Hold 2',
-      70: 'Sound Controller 1',
-      71: 'Sound Controller 2',
-      72: 'Sound Controller 3',
-      73: 'Sound Controller 4',
-      74: 'Sound Controller 5',
-      75: 'Sound Controller 6',
-      76: 'Sound Controller 7',
-      77: 'Sound Controller 8',
-      78: 'Sound Controller 9',
+      70: 'Sound Variation',
+      71: 'Filter Resonance',
+      72: 'Release Time',
+      73: 'Attack Time',
+      74: 'Brightness',
+      75: 'Decay Time',
+      76: 'Vibrato Rate',
+      77: 'Vibrato Depth',
+      78: 'Vibrato Delay',
       79: 'Sound Controller 10',
       80: 'General Purpose Controller 5',
       81: 'General Purpose Controller 6',
