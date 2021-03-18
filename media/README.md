@@ -21,6 +21,7 @@ free from typos and don't sound awkward.
 ### Currently available:
 
 [**en (English)**](en.md)  
+[**es (Spanish)**](es.md)  
 [**ru (Russian)**](ru.md)  
 
 [Privacy Policy](PRIVACY.md)  
