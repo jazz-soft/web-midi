@@ -13,7 +13,7 @@ Habilita <a href=http://webaudio.github.io/web-midi-api>Web MIDI API</a> en Fire
 
 Este complemento requiere la extensión <a href=https://addons.mozilla.org/firefox/addon/jazz-midi>Jazz-MIDI</a> y <a href=https://jazz-soft.net>Jazz-Plugin</a>. Por favor, instala ambas.
 
-Para ver el código fuente y dar tu opinión, por favor visita la página <a href=https://github.com/jazz-soft/web-midi>GutHub</a>
+Para ver el código fuente y dar tu opinión, por favor visita la página <a href=https://github.com/jazz-soft/web-midi>GutHub</a>.
 
 ## Description (Apple App Store)
 Web MIDI API es un estándar de la W3C que describe la comunicación entre el navegador y los instrumentos musicales MIDI.
