@@ -1,7 +1,7 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '1.2.5';
+  var _version = '1.3.3';
   var i, j, k, m, n;
 
   var _time = Date.now || function () { return new Date().getTime(); };
@@ -11,6 +11,8 @@ function _JZZ() {
   var _schedule = function(f) {
     setTimeout(f, 0);
   };
+  function _nop() {}
+  function _func(f) { return typeof f == 'function'; }
 
   // _R: common root for all async objects
   function _R() {
@@ -53,10 +55,10 @@ function _JZZ() {
   };
   function _then(good, bad) {
     if (this._bad) {
-      if (bad instanceof Function) bad.apply(this, [new Error(this._err())]);
+      if (_func(bad)) bad.apply(this, [new Error(this._err())]);
     }
     else {
-      if (good instanceof Function) good.apply(this, [this]);
+      if (_func(good)) good.apply(this, [this]);
     }
   }
   function _wait(obj, delay) {
@@ -80,13 +82,13 @@ function _JZZ() {
   }
   function _and(q) {
     if (!this._bad) {
-      if (q instanceof Function) q.apply(this); else console.log(q);
+      if (_func(q)) q.apply(this); else console.log(q);
     }
   }
   _R.prototype.and = function(func) { this._push(_and, [func]); return this._thenable(); };
   function _or(q) {
     if (this._bad) {
-      if (q instanceof Function) q.apply(this); else console.log(q);
+      if (_func(q)) q.apply(this); else console.log(q);
     }
   }
   _R.prototype.or = function(func) { this._push(_or, [func]); return this._thenable(); };
@@ -258,7 +260,7 @@ function _JZZ() {
 
   function _filterList(q, arr) {
     var i, n;
-    if (q instanceof Function) q = q(arr);
+    if (_func(q)) q = q(arr);
     if (!(q instanceof Array)) q = [q];
     var before = [];
     var after = [];
@@ -410,7 +412,7 @@ function _JZZ() {
     return this._thenable();
   };
   function _connect(arg) {
-    if (arg instanceof Function) _push(this._orig._handles, arg);
+    if (_func(arg)) _push(this._orig._handles, arg);
     else _push(this._orig._outs, arg);
   }
   function _disconnect(arg) {
@@ -418,7 +420,7 @@ function _JZZ() {
       this._orig._handles = [];
       this._orig._outs = [];
     }
-    else if (arg instanceof Function) _pop(this._orig._handles, arg);
+    else if (_func(arg)) _pop(this._orig._handles, arg);
     else _pop(this._orig._outs, arg);
   }
   _M.prototype.connect = function(arg) {
@@ -498,7 +500,7 @@ function _JZZ() {
   }
   _W.prototype = new _R();
   function _connectW(arg) {
-    if (arg instanceof Function) {
+    if (_func(arg)) {
       if (!this._orig._handles.length) _engine._watch();
       _push(this._orig._handles, arg);
     }
@@ -582,15 +584,18 @@ function _JZZ() {
   // Web MIDI API
   var _navigator;
   var _requestMIDIAccess;
-  if (typeof navigator !== 'undefined' && navigator.requestMIDIAccess) {
-    _navigator = navigator;
-    _requestMIDIAccess = navigator.requestMIDIAccess;
-    try {
-      if (_requestMIDIAccess.toString().indexOf('JZZ(') != -1) _requestMIDIAccess = undefined;
+  function _findMidiAccess() {
+    if (typeof navigator !== 'undefined' && navigator.requestMIDIAccess) {
+      _navigator = navigator;
+      _requestMIDIAccess = navigator.requestMIDIAccess;
+      try {
+        if (_requestMIDIAccess.toString().indexOf('JZZ(') != -1) _requestMIDIAccess = undefined;
+      }
+      catch (err) {}
     }
-    catch (err) {}
   }
   function _tryWebMIDI() {
+    _findMidiAccess();
     if (_requestMIDIAccess) {
       var self = this;
       var onGood = function(midi) {
@@ -608,6 +613,7 @@ function _JZZ() {
     this._break();
   }
   function _tryWebMIDIsysex() {
+    _findMidiAccess();
     if (_requestMIDIAccess) {
       var self = this;
       var onGood = function(midi) {
@@ -617,13 +623,14 @@ function _JZZ() {
       var onBad = function(msg) {
         self._crash(msg);
       };
-      var opt = {sysex:true};
+      var opt = { sysex:true };
       _requestMIDIAccess.call(_navigator, opt).then(onGood, onBad);
       this._pause();
       return;
     }
     this._break();
   }
+
   // Web-extension
   function _tryCRX() {
     var self = this;
@@ -698,7 +705,6 @@ function _JZZ() {
   }
 
   function _initJZZ(opt) {
-    _initAudioContext();
     _jzz = new _J();
     _jzz._options = opt;
     _jzz._push(_tryAny, [_filterEngines(opt)]);
@@ -713,9 +719,9 @@ function _JZZ() {
     _engine._outs = [];
     _engine._ins = [];
     _engine._refresh = function() { _postRefresh(); };
-    _engine._watch = function() {};
-    _engine._unwatch = function() {};
-    _engine._close = function() {};
+    _engine._watch = _nop;
+    _engine._unwatch = _nop;
+    _engine._close = _nop;
   }
   // common initialization for Jazz-Plugin and jazz-midi
   function _initEngineJP() {
@@ -1833,7 +1839,7 @@ function _JZZ() {
         dd = '' + dd;
         if (dd.length == 0) dd = '\x00\x00';
         else if (dd.length == 1) dd = '\x00' + dd;
-        else if (dd.length > 2) throw RangeError('Sequence number out of range: ' + _smftxt(dd));
+        else if (dd.length > 2) throw RangeError('Sequence number out of range' + _smftxt(dd));
       }
       return _smf(0, dd);
     },
@@ -1854,7 +1860,7 @@ function _JZZ() {
       else {
         dd = '' + dd;
         if (dd.length == 0) dd = '\x00';
-        else if (dd.length > 1 || dd.charCodeAt(0) > 15) throw RangeError('Channel number out of range: ' + _smftxt(dd));
+        else if (dd.length > 1 || dd.charCodeAt(0) > 15) throw RangeError('Channel number out of range' + _smftxt(dd));
       }
       return _smf(32, dd);
     },
@@ -1866,12 +1872,12 @@ function _JZZ() {
       else {
         dd = '' + dd;
         if (dd.length == 0) dd = '\x00';
-        else if (dd.length > 1 || dd.charCodeAt(0) > 127) throw RangeError('Port number out of range: ' + _smftxt(dd));
+        else if (dd.length > 1 || dd.charCodeAt(0) > 127) throw RangeError('Port number out of range' + _smftxt(dd));
       }
       return _smf(33, dd);
     },
     smfEndOfTrack: function(dd) {
-      if (_2s(dd) != '') throw RangeError('Unexpected data: ' + _smftxt(_2s(dd)));
+      if (_2s(dd) != '') throw RangeError('Unexpected data' + _smftxt(_2s(dd)));
       return _smf(47);
     },
     smfTempo: function(dd) { // microseconds per quarter note
@@ -1879,7 +1885,7 @@ function _JZZ() {
       if (dd == parseInt(dd) && dd > 0 && dd <= 0xffffff) {
         return _smf(81, String.fromCharCode(dd >> 16) + String.fromCharCode((dd >> 8) & 0xff) + String.fromCharCode(dd & 0xff));
       }
-      throw RangeError('Out of range: ' + _smftxt(_2s(dd)));
+      throw RangeError('Out of range' + _smftxt(_2s(dd)));
     },
     smfBPM: function(bpm) { return _helperSMF.smfTempo(Math.round(60000000.0 / bpm)); },
     smfSMPTE: function(dd) {
@@ -1898,7 +1904,7 @@ function _JZZ() {
       if (m) {
         nn = parseInt(m[1]);
         dd = parseInt(m[2]);
-        if (nn > 0 && nn <= 0xff && dd && !(dd & (dd - 1))) {
+        if (nn > 0 && nn < 0x100 && dd > 0 && !(dd & (dd - 1))) {
           cc = dd; dd = 0;
           for (cc >>= 1; cc; cc >>= 1) dd++;
           cc = b == parseInt(b) ? b : 24;
@@ -1907,17 +1913,21 @@ function _JZZ() {
         }
         else if (('' + a ).length == 4) return _smf(88, a);
       }
-      else if (a == parseInt(a) && b == parseInt(b) && b && !(b & (b - 1))) {
-        nn = a;
-        dd = 0;
-        cc = b;
-        for (cc >>= 1; cc; cc >>= 1) dd++;
-        cc = c == parseInt(c) ? c : 24;
-        bb = d == parseInt(d) ? d : 8;
-        return _smf(88, String.fromCharCode(nn) + String.fromCharCode(dd) + String.fromCharCode(cc) + String.fromCharCode(bb));
+      else if (a == parseInt(a) && b == parseInt(b)) {
+        if (a > 0 && a < 0x100 && b > 0 && !(b & (b - 1))) {
+          nn = a;
+          dd = 0;
+          cc = b;
+          for (cc >>= 1; cc; cc >>= 1) dd++;
+          cc = c == parseInt(c) ? c : 24;
+          bb = d == parseInt(d) ? d : 8;
+          return _smf(88, String.fromCharCode(nn) + String.fromCharCode(dd) + String.fromCharCode(cc) + String.fromCharCode(bb));
+        }
+        else if (('' + a ).length == 4) return _smf(88, a);
+        a = a + '/' + b;
       }
       else if (('' + a ).length == 4) return _smf(88, a);
-      throw RangeError('Wrong time signature: ' + _smftxt(_2s(a)));
+      throw RangeError('Wrong time signature' + _smftxt(_2s('' + a)));
     },
     smfKeySignature: function(dd) {
       dd = '' + dd;
@@ -1936,7 +1946,7 @@ function _JZZ() {
         }
       }
       if (dd.length == 2 && dd.charCodeAt(1) <= 1 && (dd.charCodeAt(0) <= 7 || dd.charCodeAt(0) <= 255 && dd.charCodeAt(0) >= 249)) return _smf(89, dd);
-      throw RangeError('Incorrect key signature: ' + _smftxt(dd));
+      throw RangeError('Incorrect key signature' + _smftxt(dd));
     },
     smfSequencer: function(dd) { return _smf(127, _2s(dd)); }
   };
@@ -2661,10 +2671,10 @@ function _JZZ() {
     };
     Promise.prototype.then = function(resolve, reject) {
       if (typeof resolve !== 'function') {
-        resolve = function() {};
+        resolve = _nop;
       }
       if (typeof reject !== 'function') {
-        reject = function() {};
+        reject = _nop;
       }
       this.executor(resolve, reject);
     };
@@ -2732,9 +2742,9 @@ function _JZZ() {
     Object.defineProperty(this, 'onmidimessage', {
       get: function() { return _onmsg; },
       set: function(value) {
-        if (value instanceof Function) {
+        if (_func(value)) {
           _onmsg = value;
-          if (!_open) try { self.open(); } catch(e) {/**/}
+          if (!_open) self.open().then(_nop, _nop);
         }
         else _onmsg = null;
       },
@@ -2743,7 +2753,7 @@ function _JZZ() {
     Object.defineProperty(this, 'onstatechange', {
       get: function() { return _ochng; },
       set: function(value) {
-        if (value instanceof Function) _ochng = value;
+        if (_func(value)) _ochng = value;
         else _ochng = null;
       },
       enumerable: true
@@ -2941,7 +2951,7 @@ function _JZZ() {
     Object.defineProperty(this, 'onstatechange', {
       get: function() { return _ochng; },
       set: function(value) {
-        if (value instanceof Function) _ochng = value;
+        if (_func(value)) _ochng = value;
         else _ochng = null;
       },
       enumerable: true
@@ -2983,8 +2993,7 @@ function _JZZ() {
         if (timestamp > now) setTimeout(function() { p.proxy.send(data); }, timestamp - now);
         else p.proxy.send(data);
       }
-      else this.open().then(function() { self.send(data, timestamp); });
-
+      else this.open().then(function() { self.send(data, timestamp); }, _nop);
     };
     Object.freeze(this);
   }
@@ -3165,7 +3174,7 @@ function _JZZ() {
     this.outputs = new MIDIOutputMap(self, _outputs);
     Object.defineProperty(this, 'onstatechange', {
       get: function() { return _onstatechange; },
-      set: function(f) { _onstatechange = f instanceof Function ? f : null; },
+      set: function(f) { _onstatechange = _func(f) ? f : null; },
       enumerable: true
     });
     Object.freeze(this);
