@@ -1,11 +1,4 @@
-# Extensions for Safari
-
-## web-midi.safariextension
-
-#### For Safari v.11 and older.
-
-Apple have removed these from the App Store, but one can install these from the source code if required.
-
+# Extension for Safari
 
 ## web-midi
 
