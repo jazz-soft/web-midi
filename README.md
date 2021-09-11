@@ -13,12 +13,6 @@ This extension requires
 This extension requires
 [**Jazz-MIDI**](https://apps.apple.com/us/app/jazz-midi/id1506447231).
 
-For Safari v.11 and older:
-Apple have removed the old style extensions from the App Store,  
-but they can be installed from the [**source code**](safari/README.md), 
-or (for v.<9) downloaded from [**here**](https://jazz-soft.net/download/web-midi/web-midi-api.1.0.1.2.safariextz).  
-This extension requires [**Jazz-Plugin**](https://jazz-soft.net).
-
 ## Help needed!
 We are looking for your help to [**localize the extension**](media/README.md)...
 
