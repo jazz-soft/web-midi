@@ -1,7 +1,7 @@
 function _JZZ() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '1.4.0';
+  var _version = '1.4.6';
   var i, j, k, m, n;
 
   /* istanbul ignore next */
@@ -1529,6 +1529,11 @@ function _JZZ() {
   var _noteNum = {};
   MIDI.noteValue = function(x) { return typeof x == 'undefined' ? undefined : _noteNum[x.toString().toLowerCase()]; };
   MIDI.programValue = function(x) { return x; };
+  MIDI.octaveValue = function(x) {
+    var n = _noteNum[x.toString().toLowerCase()];
+    if (typeof n == 'undefined') n = _noteNum[x.toString().toLowerCase() + '1'];
+    return typeof n == 'undefined' ? undefined : n % 12;
+  };
   MIDI.freq = function(n, a) {
     if (typeof a == 'undefined') a = 440.0;
     _float(a);
@@ -1542,7 +1547,14 @@ function _JZZ() {
     _float(f0);
     return Math.log2(f / f0) * 12;
   };
-  MIDI.midi = function(f, f0) { return MIDI.shift(f, f0) + 69; };
+  MIDI.midi = function(f, f0) {
+    if (f != parseFloat(f)) return _7bn(f);
+    return MIDI.shift(f, f0) + 69;
+  };
+  MIDI.to7b = function(x) {
+    _float(x);
+    return x <= 0 ? 0 : x >= 1 ? 0x7f : Math.floor(x * 0x80);
+  };
   MIDI.to14b = function(x) {
     _float(x);
     return x <= 0 ? 0 : x >= 1 ? 0x3fff : Math.floor(x * 0x4000);
@@ -1580,7 +1592,7 @@ function _JZZ() {
     for (n = 0; n < 12; n++) {
       m = _noteMap[k] + n * 12;
       if (m > 127) break;
-      _noteNum[k+n] = m;
+      _noteNum[k + n] = m;
       if (m > 0) { _noteNum[k + 'b' + n] = m - 1; _noteNum[k + 'bb' + n] = m - 2; }
       if (m < 127) { _noteNum[k + '#' + n] = m + 1; _noteNum[k + '##' + n] = m + 2; }
     }
@@ -1708,6 +1720,16 @@ function _JZZ() {
     mono: function(c, n) { if (typeof n == 'undefined') n = 1; return [0xB0 + _ch(c), 0x7e, _7b(n)]; },
     poly: function(c) { return [0xB0 + _ch(c), 0x7f, 0]; },
   };
+  function _splitMasterTuning(a, b, c, d) {
+    if (typeof b != 'undefined') return [_7b(a), _7b(b), _7b(c), _7b(d)];
+    if (a != parseInt(a) || a < 0 || n > 0xffff) _bad(a);
+    a = parseInt(a);
+    return [(a >> 12) & 0xf, (a >> 8) & 0xf, (a >> 4) & 0xf, a & 0xf];
+  }
+  function _gsxg12b(x) { // -1 <= x <= 1
+    _float(x);
+    return Math.round(x * 1000 + 0x400);
+  }
   var _helperNC = { // no channel
     mtc: function(t) { return [0xF1, _mtc(t)]; },
     songPosition: function(n, l) { return typeof l == 'undefined' ? [0xF2, _lsb(n), _msb(n)] : [0xF2, _7b(l), _7b(n)]; },
@@ -1754,20 +1776,49 @@ function _JZZ() {
         if (x < -1 || x > 1) throw RangeError('Out of range: ' + b[i]);
         v.push(MIDI.to14b((b[i] + 1) / 2)); }
       return _helperNC.sxScaleTuning2.call(this, a, v, c); },
-    sxGM: function(gm) { if (typeof gm == 'undefined') gm = 1; return [0xF0, 0x7E, this._sxid, 0x09, gm ? gm == 2 ? 3 : 1 : 2, 0xF7]; },
+    sxGM: function(gm) { if (typeof gm == 'undefined') gm = 1; return [0xF0, 0x7E, this._sxid, 0x09, gm ? gm == 2 ? 3 : 1 : 2, 0xf7]; },
     sxGS: function(arg) { var arr = typeof arg == 'undefined' ? [0x40, 0, 0x7F, 0] : arg instanceof Array ? arg : arguments;
       var c = 0; var a = [0xF0, 0x41, this._sxid, 0x42, 0x12];
       for (var i = 0; i < arr.length; i++) { var x = _7b(arr[i]); a.push(x); c += x; }
       c %= 128; a.push(c ? 128 - c : 0); a.push(0xf7); return a; },
+    sxXG: function(arg) { var arr = typeof arg == 'undefined' ? [0, 0, 0x7E, 0] : arg instanceof Array ? arg : arguments;
+      var sxid = this._sxid == 0x7f ? 0 : this._sxid;
+      if (sxid > 15) _throw('Bad Yamaha device number: ' + sxid);
+      var a = [0xf0, 0x43, 16 + sxid, 0x4c];
+      for (var i = 0; i < arr.length; i++) a.push(_7b(arr[i])); a.push(0xf7); return a; },
     sxMidiSoft: function(n, s) {
       var a = [0xf0, 0x00, 0x20, 0x24, 0x00, _7b(n || 0)];
       s = typeof s == 'undefined' ? '' : '' + s;
       for (var i = 0; i < s.length; i++) a.push(_7b(s.charCodeAt(i)));
       a.push(0xf7); return a; },
+    gsMasterVolume: function(n) { return _helperNC.sxGS.call(this, [0x40, 0, 4, _7b(n)]); },
+    gsMasterVolumeF: function(x) { return _helperNC.gsMasterVolume.call(this, MIDI.to7b(_01(x))); },
+    gsMasterFineTuning: function(a, b, c, d) { a = _splitMasterTuning(a, b, c, d); return _helperNC.sxGS.call(this, [0x40, 0, 0, a[0], a[1], a[2], a[3]]); },
+    gsMasterFineTuningF: function(x) { return _helperNC.gsMasterFineTuning.call(this, _gsxg12b(x % 1)); },
+    gsMasterCoarseTuning: function(n) { return _helperNC.sxGS.call(this, [0x40, 0, 5, _7b(n)]); },
+    gsMasterCoarseTuningF: function(x) { return _helperNC.gsMasterCoarseTuning.call(this, 0x40 + (x - x % 1)); },
+    gsOctaveTuning: function(c, n, x) { return _helperNC.sxGS.call(this, [0x40, 0x10 + [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 11, 12, 13, 14, 15][_ch(c)], 0x40 + MIDI.octaveValue(n), _7b(x)]); },
+    gsOctaveTuningF: function(c, n, x) { if (x < -0.64 || x > 0.63) throw RangeError('Out of range: ' + x);
+      return _helperNC.gsOctaveTuning.call(this, c, n, Math.floor(x * 100 + 64)); },
+    xgMasterVolume: function(n) { return _helperNC.sxXG.call(this, [0, 0, 4, _7b(n)]); },
+    xgMasterVolumeF: function(x) { return _helperNC.xgMasterVolume.call(this, MIDI.to7b(_01(x))); },
+    xgMasterFineTuning: function(a, b, c, d) { a = _splitMasterTuning(a, b, c, d); return _helperNC.sxXG.call(this, [0, 0, 0, a[0], a[1], a[2], a[3]]); },
+    xgMasterFineTuningF: function(x) { return _helperNC.xgMasterFineTuning.call(this, _gsxg12b(x % 1)); },
+    xgMasterCoarseTuning: function(n) { return _helperNC.sxXG.call(this, [0, 0, 6, _7b(n)]); },
+    xgMasterCoarseTuningF: function(x) { return _helperNC.xgMasterCoarseTuning.call(this, 0x40 + (x - x % 1)); },
+    xgOctaveTuning: function(c, n, x) { return _helperNC.sxXG.call(this, [8, _ch(c), 0x41 + MIDI.octaveValue(n), _7b(x)]); },
+    xgOctaveTuningF: function(c, n, x) { if (x < -0.64 || x > 0.63) throw RangeError('Out of range: ' + x);
+      return _helperNC.xgOctaveTuning.call(this, c, n, Math.floor(x * 100 + 64)); },
     reset: function() { return [0xFF]; },
   };
   _helperNC.sxScaleTuning = _helperNC.sxScaleTuning2;
   _helperNC.sxScaleTuningF = _helperNC.sxScaleTuning2F;
+  _helperNC.sxMasterTranspose = _helperNC.sxMasterCoarseTuning;
+  _helperNC.sxMasterTransposeF = _helperNC.sxMasterCoarseTuningF;
+  _helperNC.gsMasterTranspose = _helperNC.gsMasterCoarseTuning;
+  _helperNC.gsMasterTransposeF = _helperNC.gsMasterCoarseTuningF;
+  _helperNC.xgMasterTranspose = _helperNC.xgMasterCoarseTuning;
+  _helperNC.xgMasterTransposeF = _helperNC.xgMasterCoarseTuningF;
   var _helperGCH = { // compound messages
     bank: function(c, m, l) { return typeof l == 'undefined' ?
       [_helperCH.bankMSB(c, _msb(m)), _helperCH.bankLSB(c, _lsb(m))] : [_helperCH.bankMSB(c, m), _helperCH.bankLSB(c, l)]; },
@@ -1826,7 +1877,19 @@ function _JZZ() {
   var _helperGNC = { // compound messages no channel
     sxMasterTuning: function(n, m, l) { return [_helperNC.sxMasterCoarseTuning.call(this, n), _helperNC.sxMasterFineTuning.call(this, m, l)]; },
     sxMasterTuningF: function(x) { return [_helperNC.sxMasterCoarseTuningF.call(this, x), _helperNC.sxMasterFineTuningF.call(this, x)]; },
+    gsMasterTuningF: function(x) { return [_helperNC.gsMasterCoarseTuningF.call(this, x), _helperNC.gsMasterFineTuningF.call(this, x)]; },
+    xgMasterTuningF: function(x) { return [_helperNC.xgMasterCoarseTuningF.call(this, x), _helperNC.xgMasterFineTuningF.call(this, x)]; },
     sxMasterTuningA: function(a) { return _helperGNC.sxMasterTuningF.call(this, MIDI.shift(a)); },
+    gsMasterTuningA: function(a) { return _helperGNC.gsMasterTuningF.call(this, MIDI.shift(a)); },
+    xgMasterTuningA: function(a) { return _helperGNC.xgMasterTuningF.call(this, MIDI.shift(a)); },
+    gsScaleTuning: function(c, a) { var out = []; if (a.length != 12) throw RangeError('Wrong input size: ' + a.length);
+      for (var i = 0; i < 12; i++) out.push(_helperNC.gsOctaveTuning.call(this, c, i, a[i])); return out; },
+    gsScaleTuningF: function(c, a) { var out = []; if (a.length != 12) throw RangeError('Wrong input size: ' + a.length);
+      for (var i = 0; i < 12; i++) out.push(_helperNC.gsOctaveTuningF.call(this, c, i, a[i])); return out; },
+    xgScaleTuning: function(c, a) { var out = []; if (a.length != 12) throw RangeError('Wrong input size: ' + a.length);
+      for (var i = 0; i < 12; i++) out.push(_helperNC.xgOctaveTuning.call(this, c, i, a[i])); return out; },
+    xgScaleTuningF: function(c, a) { var out = []; if (a.length != 12) throw RangeError('Wrong input size: ' + a.length);
+      for (var i = 0; i < 12; i++) out.push(_helperNC.xgOctaveTuningF.call(this, c, i, a[i])); return out; },
   };
   function _smf(ff, dd) {
     var midi = new MIDI();
@@ -2232,7 +2295,7 @@ function _JZZ() {
   MIDI.prototype.isXgReset = function() {
     return this.match([0xf0, 0x43, [0x10, 0xf0], 0x4c, 0, 0, 0x7e, 0, 0xf7]);
   };
-  MIDI.prototype.match = function(a, n) {
+  MIDI.prototype.match = function(a) {
     var i, m;
     for (i = 0; i < a.length; i++) {
       m = a[i][1];
@@ -2513,6 +2576,7 @@ function _JZZ() {
     if (msg[0] == 0xff) { this._clear(); return msg; }
     var ch = msg[0] & 15;
     var st = msg[0] >> 4;
+    var s;
     if (st == 12) {
       msg._bm = this._cc[ch].bm;
       msg._bl = this._cc[ch].bl;
@@ -2534,7 +2598,7 @@ function _JZZ() {
           }
           if (this._cc[ch].rn == 'n') {
             msg._nm = this._cc[ch].rm;
-            msg._nl = this._cc[ch].nl; 
+            msg._nl = this._cc[ch].nl;
             msg.label(_nrpn_txt(this._cc[ch].nm, this._cc[ch].nl));
           }
           break;
@@ -2543,8 +2607,12 @@ function _JZZ() {
     else if (msg.isFullSysEx()) {
       if (msg[1] == 0x7f) {
         if (msg[3] == 4) {
-          if (msg[4] == 1) msg.label('Master Volume');
-          else if (msg[4] == 2) msg.label('Master Balance');
+          s = { 1: 'Master Volume', 2: 'Master Balance', 3: 'Master Fine Tuning', 4: 'Master Coarse Tuning' }[msg[4]];
+          if (s) msg.label(s);
+        }
+        else if (msg[3] == 8) {
+          s = { 2: 'Note Tuning', 7: 'Note Tuning, Bank', 8: 'Scale Tuning, 1 byte format', 9: 'Scale Tuning, 2 byte format' }[msg[4]];
+          if (s) msg.label(s);
         }
       }
       else if (msg[1] == 0x7e) {
@@ -2554,6 +2622,14 @@ function _JZZ() {
             msg.label('Device ID Response');
           }
         }
+        else if (msg[3] == 8) {
+          s = {
+            0: 'Bulk Tuning Dump Request', 1: 'Bulk Tuning Dump', 3: 'Bulk Tuning Dump Request, Bank', 4: 'Bulk Tuning Dump, Bank',
+            5: 'Scale Tuning Dump, 1 byte format', 6: 'Scale Tuning Dump, 2 byte format',
+            7: 'Note Tuning, Bank', 8: 'Scale Tuning, 1 byte format', 9: 'Scale Tuning, 2 byte format'
+          }[msg[4]];
+          if (s) msg.label(s);
+        }
         else if (msg[3] == 9) {
           if (msg[4] == 1) { msg.label('GM1 System On'); this._clear(); this._gm = '1'; }
           else if (msg[4] == 2) { msg.label('GM System Off'); this._clear(); this._gm = '0'; }
@@ -2561,13 +2637,34 @@ function _JZZ() {
         }
       }
       else if (msg[1] == 0x43) {
-        if ((msg[2] & 0xf0) == 0x10 && msg[3] == 0x4c && msg[4] == 0 && msg[5] == 0 && msg[6] == 0x7e && msg[7] == 0) {
-          msg.label('XG System On'); this._clear(); this._gm = 'Y';
+        if ((msg[2] & 0xf0) == 0x10 && msg[3] == 0x4c) {
+          if (msg[4] == 0 && msg[5] == 0 && msg[6] == 0x7e && msg[7] == 0) {
+            msg.label('XG System On'); this._clear(); this._gm = 'Y';
+          }
+          else if (msg[4] == 0 && msg[5] == 0 && msg[6] == 0) msg.label('XG Master Tuning');
+          else if (msg[4] == 0 && msg[5] == 0 && msg[6] == 4) msg.label('XG Master Volume');
+          else if (msg[4] == 0 && msg[5] == 0 && msg[6] == 6) msg.label('XG Master Transpose');
+          else if (msg[4] == 8 && msg[5] < 16 && msg[6] >= 0x41 && msg[6] <= 0x4c) msg.label('XG Scale Tuning');
+          else  msg.label('XG Parameter');
         }
       }
       else if (msg[1] == 0x41) {
-        if (msg[3] == 0x42 && msg[4] == 0x12 && msg[5] == 0x40 && msg[6] == 0 && msg[7] == 0x7f && msg[8] == 0 && msg[9] == 0x41) {
-          msg.label('GS Reset'); this._clear(); this._gm = 'R';
+        if (msg[3] == 0x42 && msg[4] == 0x12) {
+          if (msg[5] == 0x40) {
+            if (msg[6] == 0) {
+              if (msg[7] == 0x7f && msg[8] == 0 && msg[9] == 0x41) {
+                msg.label('GS Reset'); this._clear(); this._gm = 'R';
+              }
+              else if (msg[7] == 0) msg.label('GS Master Tuning');
+              else if (msg[7] == 4) msg.label('GS Master Volume');
+              else if (msg[7] == 5) msg.label('GS Master Transpose');
+              else msg.label('GS Parameter');
+            }
+            else if ((msg[6] & 0xf0) == 0x10 && msg[7] == 0x15) msg.label('GS Drum Part Change');
+            else if ((msg[6] & 0xf0) == 0x10 && msg[7] >= 0x40 && msg[7] <= 0x4b) msg.label('GS Scale Tuning');
+            else msg.label('GS Parameter');
+          }
+          if (msg[5] == 0x41) msg.label('GS Parameter');
         }
       }
     }
