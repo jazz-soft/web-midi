@@ -32,11 +32,11 @@
 		<array>
 			<dict>
 				<key>Script</key>
-				<string>_JZZ.js</string>
+				<string>content.js</string>
 			</dict>
 			<dict>
 				<key>Script</key>
-				<string>content.js</string>
+				<string>inject.js</string>
 			</dict>
 		</array>
 		<key>SFSafariWebsiteAccess</key>

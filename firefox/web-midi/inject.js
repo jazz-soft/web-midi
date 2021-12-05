@@ -1,4 +1,7 @@
-function _JZZ() {
+navigator.requestMIDIAccess = function(MIDIOptions) {
+  if (typeof JZZ == 'undefined') window.JZZ = (
+// JZZ.js
+function() {
 
   var _scope = typeof window === 'undefined' ? global : window;
   var _version = '1.4.6';
@@ -3504,4 +3507,8 @@ function _JZZ() {
   JZZ.close = function() { if (_engine._close) _engine._close(); };
 
   return JZZ;
+}
+  )();
+  navigator.requestMIDIAccess = JZZ.requestMIDIAccess;
+  return navigator.requestMIDIAccess(MIDIOptions);
 }

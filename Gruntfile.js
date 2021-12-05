@@ -4,9 +4,10 @@ module.exports = function(grunt) {
     jshint: {
       all: ['src/**/*.js']
     },
-    import: {
-      src: 'node_modules/jzz/javascript/JZZ.js',
-      dest: 'src/_JZZ.js'
+    assemble: {
+      main: 'src/tools/main.js',
+      src: [ 'node_modules/jzz/javascript/JZZ.js' ],
+      dest: 'src/inject.js'
     },
     copy: {
       firefox: {
@@ -25,6 +26,6 @@ module.exports = function(grunt) {
   });
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.registerTask('import', require('./src/tools/import.js')(grunt));
-  grunt.registerTask('default', ['import', 'copy']);
+  grunt.registerTask('assemble', require('./src/tools/assemble.js')(grunt));
+  grunt.registerTask('default', ['assemble', 'copy']);
 };
