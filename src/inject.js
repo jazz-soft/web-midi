@@ -4,7 +4,7 @@ navigator.requestMIDIAccess = function(MIDIOptions) {
 function() {
 
   var _scope = typeof window === 'undefined' ? global : window;
-  var _version = '1.4.7';
+  var _version = '1.5.0';
   var i, j, k, m, n;
 
   /* istanbul ignore next */
@@ -2831,11 +2831,13 @@ function() {
             document.removeEventListener('keydown', _activateAudioContext);
           }
         };
-        document.addEventListener('touchstart', _activateAudioContext);
-        document.addEventListener('touchend', _activateAudioContext);
-        document.addEventListener('mousedown', _activateAudioContext);
-        document.addEventListener('keydown', _activateAudioContext);
-        _activateAudioContext();
+        if (typeof document != 'undefined') {
+          document.addEventListener('touchstart', _activateAudioContext);
+          document.addEventListener('touchend', _activateAudioContext);
+          document.addEventListener('mousedown', _activateAudioContext);
+          document.addEventListener('keydown', _activateAudioContext);
+          _activateAudioContext();
+        }
       }
     }
   }
